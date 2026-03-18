@@ -19,11 +19,13 @@ This assumes usage of the MCP server. Tips:
   before writing custom code ask the user if the relevant package(s) should be
   added to the project.
   + Example: the CSV file format is often simple, but there are some gotchas.
-    It's typically safer to use CSV.jl.
-  + When considering adding a package and the target project is ambiguous, ask
-    the user for clarification. Example: "I need to parse a CSV file. Should I
-    1. Make CSV.jl a project dependency? 2. Make CSV.jl a test dependency? 3.
-    Add CSV.jl transiently? 4. Write my own parser?"
+    It's worth asking if CSV.jl should be used.
+  + If the target project is ambiguous, ask the user for clarification. Example:
+    "I need to parse a CSV file. Should I
+     1. Add CSV.jl as a project dependency?
+     2. Add CSV.jl as a test dependency?
+     3. Add CSV.jl to the current temporary environment?
+     4. Write my own parser?"
 - when adding packages to a project, don't insert the SHA from your own
   knowledge: use Julia's package manager. Also update the `[compat]` section of
   `Project.toml` to bound the version of the new dependency. Where possible,
