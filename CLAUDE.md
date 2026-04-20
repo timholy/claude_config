@@ -1,7 +1,8 @@
 # Debugging Julia code
 
-This assumes usage of the MCP server. Tips:
-- Exploit `Revise` to amortize the cost of compilation time, which for Julia is quite high
+- Exploit `Revise` to amortize the cost of compilation time, which for Julia is
+  quite high. This *requires* that you use the MCP server to avoid starting a
+  new Julia session each time.
 
 - Generally it's best to run a package test suite in an interactive session (to
   leverage Revise), saving `Pkg.test()` for a final run only when ready to
@@ -10,26 +11,22 @@ This assumes usage of the MCP server. Tips:
 
 # Packages
 
-- Use the local Project.toml environment when available. I have some tools in my
-  global (fallback) environment.
-- find the source for session-loaded packages with `Pkg.pkgdir(M::Module)`
-- for non-loaded packages, before browsing the global environment or the user's
-  depot, first check the currently-active project's `Manifest.toml`
-- for tasks that can be solved by packages not in the project's environment,
-  before writing custom code ask the user if the relevant package(s) should be
-  added to the project.
-  + Example: the CSV file format is often simple, but there are some gotchas.
-    It's worth asking if CSV.jl should be used.
-  + If the target project is ambiguous, ask the user for clarification. Example:
-    "I need to parse a CSV file. Should I
-     1. Add CSV.jl as a project dependency?
-     2. Add CSV.jl as a test dependency?
-     3. Add CSV.jl to the current temporary environment?
-     4. Write my own parser?"
-- when adding packages to a project, don't insert the SHA from your own
-  knowledge: use Julia's package manager. Also update the `[compat]` section of
-  `Project.toml` to bound the version of the new dependency. Where possible,
-  choose lower bounds compatible with the LTS release of Julia (currently 1.10).
+- Do not bias decisions about packages based on what is already installed on the
+  local machine: instead, use Julia's package manager to add any needed
+  dependencies.
+
+- Use the local `Project.toml` environment when available. I also have some
+  developer-oriented tools in my global (fallback) environment.
+
+- When adding new pacakges to a local project, also update the `[compat]`
+  section of `Project.toml` to bound the version of the new dependency. Where
+  possible, choose lower bounds compatible with the LTS release of Julia
+  (currently 1.10).
+
+- As needed, find the source for session-loaded packages with
+  `Pkg.pkgdir(M::Module)`. For packages not loaded into the session, before
+  searching the hard drive check the currently-active project's `Manifest.toml`
+  for the path.
 
 # Style guide
 
