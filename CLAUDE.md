@@ -5,7 +5,7 @@
   new Julia session each time.
 
 - Run package test suites in an interactive session like this:
-  `julia --project 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'`
+  `julia --project -e 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'`
 
 - Use `Pkg.test()` for a final run only when ready to submit a pull request.
 
