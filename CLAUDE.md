@@ -11,12 +11,13 @@
 
 # Packages
 
-- Do not bias decisions about packages based on what is already installed. Use
-  Julia's package manager to add any needed dependencies.
-
 - Use the local `Project.toml` environment when available. Revise, TestEnv,
   Cthulhu, and some other developer-oriented tools are in my global (fallback)
   environment.
+
+- Do not bias decisions about packages based on what is already installed. Use
+  Julia's package manager to add any needed dependencies:
+  `julia --project -e 'using Pkg; Pkg.add("NewPackage")'`
 
 - When adding new pacakges to a local project, also update the `[compat]`
   section of `Project.toml` to bound the version of the new dependency. Where
