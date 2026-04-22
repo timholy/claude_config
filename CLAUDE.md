@@ -4,19 +4,19 @@
   quite high. This *requires* that you use the MCP server to avoid starting a
   new Julia session each time.
 
-- Generally it's best to run a package test suite in an interactive session (to
-  leverage Revise), saving `Pkg.test()` for a final run only when ready to
-  submit a pull request. Many packages require `TestEnv` to run their tests in
-  an interactive session.
+- Run package test suites in an interactive session like this:
+  `julia --project 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'`
+
+- Use `Pkg.test()` for a final run only when ready to submit a pull request.
 
 # Packages
 
-- Do not bias decisions about packages based on what is already installed on the
-  local machine: instead, use Julia's package manager to add any needed
-  dependencies.
+- Do not bias decisions about packages based on what is already installed. Use
+  Julia's package manager to add any needed dependencies.
 
-- Use the local `Project.toml` environment when available. I also have some
-  developer-oriented tools in my global (fallback) environment.
+- Use the local `Project.toml` environment when available. Revise, TestEnv,
+  Cthulhu, and some other developer-oriented tools are in my global (fallback)
+  environment.
 
 - When adding new pacakges to a local project, also update the `[compat]`
   section of `Project.toml` to bound the version of the new dependency. Where
@@ -40,7 +40,8 @@
 - avoid redundant keyword syntax: if `f` accepts a kwarg called `max_iter`
   and you already have an in-scope variable `max_iter`, then calling it as
   `f(; max_iter)` suffices; don't write this as `f(; max_iter=max_iter)`.
-  Exception: packages that still support Julia 1.0 need to write it the long way.
+  Exception: packages that still support Julia versions before 1.6 need to
+  write it the long way.
 
 - any new `convert(::Type{T}, x)` methods should always return an object of the
   requested type `T`. You should mentally model this as
