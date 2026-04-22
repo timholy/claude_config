@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json; d=json.load(sys.stdin); print(d['tool_input'].get('file_path',''))\" | { read -r f; [[ \"$f\" == *.jl ]] && runic -i \"$f\"; } 2>/dev/null || true",
+            "statusMessage": "Formatting Julia with Runic..."
+          }
+        ]
+      }
+    ]
+  }
+}
