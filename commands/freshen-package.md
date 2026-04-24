@@ -31,7 +31,7 @@ Pause after reporting findings and wait for user approval of proposed fixes.
 
 Search for `@deprecate` and `Base.depwarn` in `src/`. For each:
 - Remove the deprecation
-- Remove any associated tests
+- Migrate or remove any associated tests (remove if the test's sole purpose was to verify the deprecated syntax and the new functionality is already fully covered; otherwise migrate to test the replacement)
 - Update callers within the package if any
 
 Then bump the version in `Project.toml` to indicate a breaking change:
@@ -44,7 +44,12 @@ Commit the changes.
 
 ### Step 5 — Add `@public` annotations
 
-Identify functions that are intended to be called via scoping (not exported, but part of the public API). Add the following macro to the package if needed and mark those functions `@public`:
+Identify functions that are intended to be called via scoping (not exported, but part of the public API) and mark them `@public`.
+
+Check the Julia lower bound in `[compat]` of `Project.toml`:
+
+- **If the lower bound is ≥ 1.11**, use `public` directly (it is a built-in keyword).
+- **If the lower bound is < 1.11**, add the following compatibility shim to the package and use `@public` instead:
 
 ```julia
 macro public(ex)
@@ -104,9 +109,3 @@ Inspect the current state of documentation (README and/or `docs/`):
 
 Summarize findings and suggestions for the user. **[pause for approval]** Then implement and commit.
 
----
-
-### Step 11 — Re-run runic **[pause after PR merges]**
-Run `/freshen-runic` again to catch any formatting drift introduced during the steps above.
-
-As before, this requires a PR to merge. Pause and wait for the user to confirm before marking this workflow complete.
