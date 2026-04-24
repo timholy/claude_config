@@ -4,10 +4,20 @@
   quite high. This *requires* that you use the MCP server to avoid starting a
   new Julia session each time.
 
-- Run package test suites in an interactive session like this:
-  `julia --project -e 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'`
-
 - Use `Pkg.test()` for a final run only when ready to submit a pull request.
+
+# GUI packages
+
+For packages that require a display (e.g., Gtk, Qt, Makie), avoid repeated
+`xvfb-run julia ...` invocations. Instead:
+
+1. Start a virtual display once in the background:
+   `Xvfb :99 -screen 0 1024x768x24 &`
+2. Set `ENV["DISPLAY"] = ":99"` in the MCP Julia session before loading the
+   package, so Revise-based iteration still works.
+
+Fall back to `xvfb-run julia ...` via Bash only for final `Pkg.test()` runs or
+when the MCP session cannot be reconfigured.
 
 # Packages
 
@@ -15,9 +25,7 @@
   Cthulhu, and some other developer-oriented tools are in my global (fallback)
   environment.
 
-- Do not bias decisions about packages based on what is already installed. Use
-  Julia's package manager to add any needed dependencies:
-  `julia --project -e 'using Pkg; Pkg.add("NewPackage")'`
+- Do not bias decisions about packages based on what is already installed.
 
 - When adding new pacakges to a local project, also update the `[compat]`
   section of `Project.toml` to bound the version of the new dependency. Where
@@ -31,18 +39,19 @@
 
 # Style guide
 
-- avoid being unnecessarily restrictive about method arguments: for example,
-  `f(A::Matrix{Float64})` is usually too specific unless you have clear reasons
-  (e.g., if `f` will `ccall` code that expects a particular memory layout).
-  `f(A::AbstractMatrix)` is typically a better choice. Foremost, signatures
-  should be specific enough to control dispatch and resolve ambiguities.
-  Judicious annotation can also make code easier to read.
+- avoid being unnecessarily restrictive about method arguments. `f(A::Matrix{Float64})`
+  silently excludes sparse matrices, GPU arrays, `Float32`, dual numbers, and anything
+  else that would work fine — the caller gets a confusing `MethodError` instead.
+  Annotate only as specifically as the implementation requires: use `Matrix{Float64}`
+  only when a `ccall` or similar demands a specific memory layout and element type;
+  use `AbstractMatrix` when 2-D structure matters; use `AbstractArray` when it does
+  not; leave unannotated when the method works for any input. Annotate to control
+  dispatch and resolve ambiguities, not to document intent.
 
-- avoid redundant keyword syntax: if `f` accepts a kwarg called `max_iter`
-  and you already have an in-scope variable `max_iter`, then calling it as
-  `f(; max_iter)` suffices; don't write this as `f(; max_iter=max_iter)`.
-  Exception: packages that still support Julia versions before 1.6 need to
-  write it the long way.
+- avoid redundant keyword syntax: when a variable name matches the keyword argument
+  name, use the short form `f(; max_iter)` instead of `f(; max_iter=max_iter)`.
+  This applies at function call sites, `NamedTuple` construction, and similar contexts.
+  Exception: packages supporting Julia before 1.6 must use the long form.
 
 - any new `convert(::Type{T}, x)` methods should always return an object of the
   requested type `T`. You should mentally model this as
