@@ -97,6 +97,19 @@ Every exported function must have a docstring. Check for:
 - Outdated argument lists
 - Inconsistent formatting
 
+Related methods of the same function can share a single docstring using a multi-signature first line, e.g.:
+
+```julia
+"""
+    foo(name::AbstractString)
+    foo(mod::Module)
+
+Check a module for any misuses of `bar`.
+"""
+```
+
+Reserve separate docstrings for methods that differ substantially in behavior or purpose.
+
 Summarize findings for the user. **[pause for approval]** Then implement and commit.
 
 ---
@@ -105,7 +118,11 @@ Summarize findings for the user. **[pause for approval]** Then implement and com
 
 Inspect the current state of documentation (README and/or `docs/`):
 - For simple packages, the README may suffice
-- For complex packages, suggest a Documenter.jl `docs/` structure if not present
+- For complex packages, suggest a Documenter.jl `docs/` structure if not present; consider whether a short tutorial or explanation of non-obvious design choices would help users
+
+If adding or updating Documenter docs:
+- Update the CI YAML to build and deploy documentation
+- Ensure `docs/Project.toml` has `[compat]` bounds for Documenter and any other dependency listed there (other than the package itself)
 
 Summarize findings and suggestions for the user. **[pause for approval]** Then implement and commit.
 
