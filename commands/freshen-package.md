@@ -1,10 +1,18 @@
 ---
-description: Orchestrate full Julia package freshening: gitignore, formatting, Aqua, ExplicitImports, deprecations, public annotations, struct mutability, coverage, docstrings, and documentation
+description: Orchestrate full Julia package freshening: gitignore, formatting, Aqua, ExplicitImports, deprecations, public annotations, struct mutability, API conventions, coverage, docstrings, and documentation
 ---
 
 Walk through the following package maintenance steps in order for the Julia package in the current directory. Complete each step before moving to the next. At steps marked **[pause]**, stop and wait for explicit user confirmation before continuing.
 
 The package module name is determined by reading `Project.toml`.
+
+---
+
+### Preliminary — Design review (separate session recommended)
+
+Before starting, suggest to the user that they run `/review-design` in a separate Claude session first. That skill reviews the package's conceptual design — type hierarchy, scope, composability, overlapping operations — and may surface changes (renaming or removing types, restructuring the export list) that would affect what is worth investing in during the steps below. It is discussion-only and produces no code changes, so it is best done before the freshening work begins.
+
+Do not block on this — if the user wants to proceed without it, continue to Step 1.
 
 ---
 
@@ -73,7 +81,14 @@ Pause after reporting findings and wait for user approval of proposed fixes.
 
 ---
 
-### Step 7 — Limit struct mutability
+### Step 7 — Review API conventions **[pause for approval]**
+Run `/review-api`.
+
+Pause after the report is presented and wait for user approval of which changes to make.
+
+---
+
+### Step 8 — Limit struct mutability
 
 In a subagent, find all `mutable struct` definitions in `src/`. For each:
 - If the struct does not require mutability, make it immutable
@@ -83,14 +98,14 @@ Summarize findings for the user. **[pause for approval]** Then implement approve
 
 ---
 
-### Step 8 — Improve test coverage **[pause for approval]**
+### Step 9 — Improve test coverage **[pause for approval]**
 Run `/freshen-coverage`.
 
 Pause after reporting findings and wait for user approval of proposed tests.
 
 ---
 
-### Step 9 — Add and improve docstrings
+### Step 10 — Add and improve docstrings
 
 Every exported function must have a docstring. Check for:
 - Missing docstrings on exported functions
@@ -114,7 +129,7 @@ Summarize findings for the user. **[pause for approval]** Then implement and com
 
 ---
 
-### Step 10 — Add or improve documentation
+### Step 11 — Add or improve documentation
 
 Inspect the current state of documentation (README and/or `docs/`):
 - For simple packages, the README may suffice

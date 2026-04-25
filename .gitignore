@@ -1,5 +1,6 @@
 .credentials.json
 mcp-needs-auth-cache.json
+stats-cache.json
 history.jsonl
 backups/
 cache/
