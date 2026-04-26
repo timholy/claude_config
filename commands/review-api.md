@@ -10,9 +10,9 @@ The package module name is determined from `Project.toml`.
 
 ## Phase 1 — Inventory the public API
 
-Read all files in `src/` and identify every exported or `public`-annotated function, macro, and type. For each function, record its full set of method signatures (argument names, types, and keyword arguments).
+Use a subagent to read all files in `src/` and build the inventory. The subagent should identify every exported or `public`-annotated function, macro, and type, recording for each function its full set of method signatures (argument names, types, and keyword arguments). Also note functions not exported but intended for `Module.name`-style use (e.g., documented but not exported).
 
-Also note functions that are not exported but appear intended for `Module.name`-style use (e.g., documented but not exported).
+The subagent should return a structured list — not the raw source. The main session works from this list.
 
 ---
 
@@ -97,6 +97,11 @@ For each tier, note whether there are clusters of related changes (e.g., "all di
 
 Present the report to the user. **[pause for approval]** Wait for explicit confirmation of which tiers and specific items to address before making any changes.
 
+Once the user confirms their selections:
+1. Write the approved change list to `.claude/review-api-approved.md`: one item per line with tier, function name, and what to change.
+2. Ask the user to run `/compact` — the source inventory and full review discussion are no longer needed in context.
+3. After compacting, read `.claude/review-api-approved.md` to recall the approved items, then proceed to Phase 4.
+
 ---
 
 ## Phase 4 — Implement approved changes
@@ -119,3 +124,5 @@ If any Tier 1 (breaking) changes were made:
 - Otherwise increment the major version.
 
 Update `Project.toml` and commit.
+
+Delete `.claude/review-api-approved.md`.

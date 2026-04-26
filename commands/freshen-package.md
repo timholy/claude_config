@@ -24,14 +24,14 @@ Run `/freshen-gitignore`.
 ### Step 2 — Format with runic **[pause after PR merges]**
 Run `/freshen-runic`.
 
-This step requires a PR to merge before continuing. Pause and wait for the user to confirm the merge.
+This step requires a PR to merge before continuing. Pause and wait for the user to confirm the merge. Once confirmed, ask the user to run `/compact` before continuing to Step 3.
 
 ---
 
 ### Step 3 — Add Aqua.jl **[pause for approval]**
 Run `/freshen-aqua`.
 
-Pause after reporting findings and wait for user approval of proposed fixes.
+Pause after reporting findings and wait for user approval of proposed fixes. Once all Aqua changes are committed, ask the user to run `/compact` before continuing to Step 4.
 
 ---
 
@@ -77,14 +77,14 @@ Commit if any changes are made.
 ### Step 6 — Analyze with ExplicitImports.jl **[pause for approval]**
 Run `/freshen-explicit-imports`.
 
-Pause after reporting findings and wait for user approval of proposed fixes.
+Pause after reporting findings and wait for user approval of proposed fixes. Once all ExplicitImports changes are committed, ask the user to run `/compact` before continuing to Step 7.
 
 ---
 
 ### Step 7 — Review API conventions **[pause for approval]**
 Run `/review-api`.
 
-Pause after the report is presented and wait for user approval of which changes to make.
+Pause after the report is presented and wait for user approval of which changes to make. After `/review-api` fully completes (including any version bump in Phase 5), ask the user to run `/compact` before continuing to Step 8.
 
 ---
 
@@ -94,7 +94,7 @@ In a subagent, find all `mutable struct` definitions in `src/`. For each:
 - If the struct does not require mutability, make it immutable
 - If it must remain mutable, mark any fields that are never mutated as `const` (note: `const` fields must precede any unset fields in partial `new` constructors)
 
-Summarize findings for the user. **[pause for approval]** Then implement approved changes and verify tests pass. Commit.
+The subagent should return a structured list: for each `mutable struct`, whether it can be made immutable, and which fields (if any) can be marked `const`. **[pause for approval]** Then implement approved changes and verify tests pass. Commit.
 
 ---
 

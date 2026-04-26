@@ -29,6 +29,8 @@ for fc in coverage
 end
 ```
 
+The subagent should return a compact summary: overall coverage percentage, then per-file uncovered line ranges grouped by proximity (e.g. "lines 42–48, 91" rather than a raw line-by-line dump). Aim for output a human can scan in under a minute.
+
 ## 3. Report findings
 
 Summarize for the user:

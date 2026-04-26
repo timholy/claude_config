@@ -6,30 +6,21 @@ Review the Julia package in the current working directory for conceptual design 
 
 This skill produces a structured report and discussion, not a to-do list. Many findings will be questions for the author rather than clear recommendations, because the right answer often depends on design intent that only the author knows. Do not implement any changes — the output of this skill is input to a conversation.
 
-The package module name is determined from `Project.toml`. Read all of `src/`, `test/`, and any README or `docs/` material before forming judgments.
+The package module name is determined from `Project.toml`.
 
 ---
 
-## Phase 1 — Understand the package's stated purpose
+## Phases 1 + 2 — Understand the package and build a conceptual map
 
-Read the README (and the top-level docstring of the main module if one exists). Write a one-paragraph summary of:
-- What problem the package solves
-- Who the intended users are (domain experts? Julia generalists? Other package authors?)
-- What the central abstraction is, if there is one
+Use a subagent to read all of `src/`, `test/`, and any README or `docs/` material. The subagent should produce and return two artifacts:
 
-This summary will serve as a reference point for all subsequent phases.
+**Phase 1 — Purpose summary**: A one-paragraph summary of what problem the package solves, who the intended users are (domain experts? Julia generalists? Other package authors?), and what the central abstraction is, if there is one.
 
----
+**Phase 2 — Conceptual map**:
+- **Types**: Every exported or `public` type, plus any unexported types that appear in public function signatures. For each, note its role: data container, algorithm parameter, result type, trait, etc.
+- **Operations**: Every exported or `public` function and macro, grouped by what they operate on. For each group, note the rough shape of the operation: construction, transformation, query, reduction, side effect, etc.
 
-## Phase 2 — Build a conceptual map
-
-From reading `src/`, construct two lists:
-
-**Types**: Every exported or `public` type, plus any unexported types that appear in public function signatures. For each, note its role: is it a data container, an algorithm parameter, a result type, a trait, something else?
-
-**Operations**: Every exported or `public` function and macro, grouped by what they operate on. For each group, note the rough shape of the operation: construction, transformation, query, reduction, side effect, etc.
-
-Do not evaluate yet — just map.
+The subagent should return only these two artifacts — not the raw source. The main session works from the purpose summary and conceptual map to run the coherence checks below.
 
 ---
 
@@ -118,3 +109,5 @@ Structure the report in three sections:
 End the report with a short paragraph characterizing the overall design: what works well, what the main tension is (if any), and what the one or two highest-leverage changes would be if the author wanted to address the findings.
 
 Present the report to the user and discuss. Do not propose specific code changes — if the user decides to act on a finding, treat that as a new task.
+
+After the discussion concludes, ask the user to run `/compact` before starting any follow-up work (this is especially important when this skill was invoked as a preliminary step before `/freshen-package`).

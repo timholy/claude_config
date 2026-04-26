@@ -33,6 +33,8 @@ print_explicit_imports(<PackageModule>; report_non_public=true)
 
 where `<PackageModule>` is the name of the package defined in this repository.
 
+The subagent should return a structured summary of detected issues only: which names rely on non-public API, which imports should be made explicit. Omit passing checks from the output.
+
 ## 3. Report and fix
 
 Summarize the results for the user. Propose fixes for any detected problems (e.g., reliance on non-public API, implicit imports that should be made explicit). Wait for user approval before making changes.

@@ -31,6 +31,8 @@ Aqua.test_all(<PackageModule>)
 
 where `<PackageModule>` is the name of the package defined in this repository.
 
+The subagent should return a structured summary: one line per Aqua check (pass or fail), plus the relevant diagnostic output for any failures. Omit raw stack traces unless the failure cause is unclear from the message alone.
+
 ## 3. Report and fix
 
 Summarize the results for the user. Propose fixes for any failures. Wait for user approval before making changes.
