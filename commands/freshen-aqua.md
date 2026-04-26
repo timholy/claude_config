@@ -20,7 +20,7 @@ Check how test dependencies are currently specified in this project:
 
 ## 2. Run Aqua checks
 
-In a subagent, run:
+Run:
 
 ```julia
 using TestEnv
@@ -30,8 +30,6 @@ Aqua.test_all(<PackageModule>)
 ```
 
 where `<PackageModule>` is the name of the package defined in this repository.
-
-The subagent should return a structured summary: one line per Aqua check (pass or fail), plus the relevant diagnostic output for any failures. Omit raw stack traces unless the failure cause is unclear from the message alone.
 
 ## 3. Report and fix
 

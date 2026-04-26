@@ -22,7 +22,7 @@ Check how test dependencies are currently specified in this project:
 
 ## 2. Run ExplicitImports analysis
 
-In a subagent running Julia 1.11 or higher, evaluate:
+Using Julia 1.11 or higher, evaluate:
 
 ```julia
 using TestEnv
@@ -32,8 +32,6 @@ print_explicit_imports(<PackageModule>; report_non_public=true)
 ```
 
 where `<PackageModule>` is the name of the package defined in this repository.
-
-The subagent should return a structured summary of detected issues only: which names rely on non-public API, which imports should be made explicit. Omit passing checks from the output.
 
 ## 3. Report and fix
 
