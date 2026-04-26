@@ -105,42 +105,14 @@ Pause after reporting findings and wait for user approval of proposed tests.
 
 ---
 
-### Step 10 — Add and improve docstrings
+### Step 10 — Add and improve docstrings **[pause for approval]**
+Run `/freshen-docstrings`.
 
-Every exported or public function must have a docstring. Check for:
-- Missing docstrings on exported functions
-- Outdated argument lists
-- Inconsistent formatting
-
-Related methods of the same function can share a single docstring using a multi-signature first line, e.g.:
-
-```julia
-"""
-    foo(name::AbstractString)
-    foo(mod::Module)
-
-Check a module for any misuses of `bar`.
-"""
-```
-
-Reserve separate docstrings for methods that differ substantially in behavior or purpose.
-
-Summarize findings for the user. **[pause for approval]** Then implement and commit.
+Pause after reporting findings and wait for user approval of proposed changes.
 
 ---
 
 ### Step 11 — Add or improve documentation
+Run `/freshen-docs`.
 
-Inspect the current state of documentation (README and/or `docs/`):
-- For simple packages, the README may suffice
-- For complex packages, suggest a Documenter.jl `docs/` structure if not present; consider whether a short tutorial or explanation of non-obvious design choices would help users
-
-Code examples in documentation should use `jldoctest` blocks where feasible so they are verified during CI. `jldoctest` output must match exactly, so ensure it is deterministic: use fixed inputs rather than `rand()`, and watch for unordered collections (`Dict`, `Set`), platform-sensitive numeric formatting, or object addresses in `show` output — restructure the assertion (e.g., sort and collect an unordered result) to avoid fragility. Examples with expensive setup, side effects, or inherently non-deterministic output are acceptable exceptions.
-
-If adding or updating Documenter docs:
-- Update the CI YAML to build and deploy documentation
-- If the repo is private, ensure the `DOCUMENTER_KEY` secret is passed to `julia-docdeploy` (the modern `julia-docdeploy` action handles SSH setup internally when given this secret — no manual SSH key steps are needed)
-- Ensure `docs/Project.toml` has `[compat]` bounds for Documenter and any other dependency listed there (other than the package itself)
-
-Summarize findings and suggestions for the user. **[pause for approval]** Then implement and commit.
-
+Commit changes.
