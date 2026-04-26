@@ -103,12 +103,14 @@ Run `/freshen-coverage`.
 
 Pause after reporting findings and wait for user approval of proposed tests.
 
+Commit changes.
+
 ---
 
 ### Step 10 — Add and improve docstrings **[pause for approval]**
 Run `/freshen-docstrings`.
 
-Pause after reporting findings and wait for user approval of proposed changes.
+Commit changes.
 
 ---
 

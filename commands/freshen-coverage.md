@@ -61,5 +61,3 @@ Re-run tests with coverage (step 1) and re-run the analysis (step 2) to verify t
 ```
 find . -name "*.jl.cov" -o -name "*.jl.*.cov" | xargs rm -f
 ```
-
-Commit all changes.

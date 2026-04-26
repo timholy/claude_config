@@ -23,7 +23,7 @@ undocumented = filter(s -> s ∉ documented, collect(needs_docstring))
 
 ## 2. Audit existing docstrings
 
-In a subagent, extract all docstrings from the meta dict and audit them. The docstring text is already available in the meta dict — do not read source files for the audit:
+In a subagent using a fresh session, extract all docstrings from the meta dict and audit them. The docstring text is already available in the meta dict — do not read source files for the audit:
 
 ```julia
 # Dump all docstrings with their current method signatures
@@ -49,7 +49,7 @@ Check each docstring for:
 
 If a specific issue requires implementation context to resolve, use the `:path` and `:linenumber` fields from `docstr.data` to read only the relevant lines — but only in a fresh Julia session, as Revise does not update these fields when source is edited.
 
-The subagent should return a structured list: for each symbol with issues, the symbol name, issue type (outdated signature / missing return description / style / clarity), and a brief note describing the problem.
+The subagent should return a structured list: for each symbol with issues, the symbol name, issue type (outdated signature / missing return description / style / clarity), and a brief note describing the problem. While these do not need to be reported to the user, they should also record the file and line number for use by the agent when implementing changes.
 
 Related methods of the same function can share a single docstring using a multi-signature first line:
 
@@ -72,6 +72,6 @@ Report to the user:
 
 **[pause for approval]** Wait for the user to confirm which issues to fix before proceeding.
 
-## 4. Implement and commit
+## 4. Implement
 
-Write new docstrings and fix approved issues.
+Write new docstrings and fix approved issues. When making changes, instead of reading full source files, where possible use targeted reads/writes using the file and line numbers extracted during the audit. To avoid changing line numbers for future edits, this may require you to edit files starting at the end and working your way towards the beginning.
