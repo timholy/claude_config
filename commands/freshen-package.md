@@ -24,7 +24,7 @@ Run `/freshen-gitignore`.
 ### Step 2 — Format with runic **[pause after PR merges]**
 Run `/freshen-runic`.
 
-This step requires a PR to merge before continuing. Pause and wait for the user to confirm the merge. Once confirmed, ask the user to run `/compact` before continuing to Step 3.
+This step requires a PR to merge before continuing. Pause and wait for the user to confirm the merge.
 
 ---
 
