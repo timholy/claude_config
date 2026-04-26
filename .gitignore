@@ -17,3 +17,5 @@ sessions/
 shell-snapshots/
 telemetry/
 todos/
+src/Manifest.toml
+src/Manifest-v*.toml
