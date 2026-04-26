@@ -4,7 +4,7 @@ description: Run Julia test coverage analysis, identify gaps, propose new tests,
 
 ## 1. Run tests with coverage
 
-In a subagent, run the test suite with coverage enabled:
+Run the test suite with coverage enabled:
 
 ```
 julia --project --code-coverage=@ -e 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'
@@ -12,7 +12,7 @@ julia --project --code-coverage=@ -e 'using Revise, TestEnv; TestEnv.activate();
 
 ## 2. Analyze coverage
 
-In the same or a follow-up subagent, analyze the results using CoverageTools.jl in a temporary environment:
+In a subagent, analyze the results using CoverageTools.jl:
 
 ```julia
 import Pkg; Pkg.activate(; temp=true); Pkg.add("CoverageTools")

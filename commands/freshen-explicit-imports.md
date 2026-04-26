@@ -16,11 +16,13 @@ Check how test dependencies are currently specified in this project:
   - **Julia 1.11+**: `julia --project -e 'using Pkg; Pkg.add("ExplicitImports"; target=:extras)'`
   - **Julia 1.10**: `julia --project -e 'using Pkg; Pkg.add("ExplicitImports")'`, then manually move the entry from `[deps]` to `[extras]` and add `"ExplicitImports"` to the `test` list under `[targets]`.
 
-  In either case, add a version bound under `[compat]` with a lower bound compatible with Julia 1.10 (LTS).
+  In either case, add a version bound under `[compat]` with a lower bound compatible with the current LTS (currently Julia 1.10).
+
+  Tip: I use `juliaup` to manage Julia versions, and `julia +1 --project ...` runs the current release (currently 1.12).
 
 ## 2. Run ExplicitImports analysis
 
-In a subagent, run:
+In a subagent running Julia 1.11 or higher, evaluate:
 
 ```julia
 using TestEnv

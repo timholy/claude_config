@@ -107,7 +107,7 @@ Pause after reporting findings and wait for user approval of proposed tests.
 
 ### Step 10 — Add and improve docstrings
 
-Every exported function must have a docstring. Check for:
+Every exported or public function must have a docstring. Check for:
 - Missing docstrings on exported functions
 - Outdated argument lists
 - Inconsistent formatting
