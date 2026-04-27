@@ -18,7 +18,7 @@ Use a subagent to read all of `src/`, `test/`, and any README or `docs/` materia
 
 **Phase 2 — Conceptual map**:
 - **Types**: Every exported or `public` type, plus any unexported types that appear in public function signatures. For each, note its role: data container, algorithm parameter, result type, trait, etc.
-- **Operations**: Every exported or `public` function and macro, grouped by what they operate on. For each group, note the rough shape of the operation: construction, transformation, query, reduction, side effect, etc.
+- **Operations**: Every exported or `public` function and macro, grouped by what they operate on. For each group, note the rough shape of the operation: construction, transformation, query, reduction, side effect, etc. For each non-exported, non-`public` functions or macros that is either (1) demonstrated in docstrings, README, or `docs/` material or (2) called directly (with namespace qualification) from the test suite, note it along with which of these usage categories it exhibits.
 
 The subagent should return only these two artifacts — not the raw source. The main session works from the purpose summary and conceptual map to run the coherence checks below.
 
@@ -94,6 +94,10 @@ Is the package's approach to errors and missing results consistent?
 - Functions that return `nothing` for "not found" vs. functions that throw — users need to know which to expect
 - Functions that accept invalid input silently (returning a meaningless result) vs. those that validate eagerly
 
+### 3i. Missing `public` annotations
+
+Record any non-exported, non-public operations together with a statement saying whether it appears in documentation and/or tests.
+
 ---
 
 ## Phase 4 — Report
@@ -104,10 +108,8 @@ Structure the report in three sections:
 
 **Design questions**: Findings that could be intentional but which are worth discussing. For each, frame it as a question: *"Function X does Y, but given that Z also exists, was the intent to...?"* The author may have a good reason; the goal is to surface the question.
 
-**Observations**: Minor things that are not clearly problems but that a design-conscious reader would notice. These may inform future decisions even if no action is taken now.
+**Observations**: Minor things that are not clearly problems but that a design-conscious reader would notice. These may inform future decisions even if no action is taken now. Non-exported, non-public operations that might be intended for external users should be noted here.
 
 End the report with a short paragraph characterizing the overall design: what works well, what the main tension is (if any), and what the one or two highest-leverage changes would be if the author wanted to address the findings.
 
 Present the report to the user and discuss. Do not propose specific code changes — if the user decides to act on a finding, treat that as a new task.
-
-After the discussion concludes, ask the user to run `/compact` before starting any follow-up work (this is especially important when this skill was invoked as a preliminary step before `/freshen-package`).
