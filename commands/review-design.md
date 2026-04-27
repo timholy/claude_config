@@ -1,5 +1,7 @@
 ---
 description: Review a Julia package's design for conceptual coherence: scope, type hierarchy, overlaps, abstraction level, and composability
+model: Opus
+effort: high
 ---
 
 Review the Julia package in the current working directory for conceptual design issues. This is not a correctness check or a convention check — assume the code runs and follows modern Julia idioms. The question is whether the package's design is internally coherent: does it have a clear identity, a sensible type hierarchy, a consistent level of abstraction, and an API that composes naturally without exposing implementation accidents?
@@ -12,15 +14,7 @@ The package module name is determined from `Project.toml`.
 
 ## Phases 1 + 2 — Understand the package and build a conceptual map
 
-Use a subagent to read all of `src/`, `test/`, and any README or `docs/` material. The subagent should produce and return two artifacts:
-
-**Phase 1 — Purpose summary**: A one-paragraph summary of what problem the package solves, who the intended users are (domain experts? Julia generalists? Other package authors?), and what the central abstraction is, if there is one.
-
-**Phase 2 — Conceptual map**:
-- **Types**: Every exported or `public` type, plus any unexported types that appear in public function signatures. For each, note its role: data container, algorithm parameter, result type, trait, etc.
-- **Operations**: Every exported or `public` function and macro, grouped by what they operate on. For each group, note the rough shape of the operation: construction, transformation, query, reduction, side effect, etc. For each non-exported, non-`public` functions or macros that is either (1) demonstrated in docstrings, README, or `docs/` material or (2) called directly (with namespace qualification) from the test suite, note it along with which of these usage categories it exhibits.
-
-The subagent should return only these two artifacts — not the raw source. The main session works from the purpose summary and conceptual map to run the coherence checks below.
+Invoke the `review-design-explorer` subagent on the current working directory. It will return a **purpose summary** (Phase 1) and a **conceptual map** of types and operations (Phase 2). Work from those two artifacts — do not re-read the source — to run the coherence checks below.
 
 ---
 

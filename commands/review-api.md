@@ -1,5 +1,7 @@
 ---
 description: Review a Julia package's public API for consistency with modern Julia conventions and idioms
+model: Sonnet
+effort: medium
 ---
 
 Review the Julia package in the current working directory for API design convention issues. The goal is not to fix bugs or deprecated syntax — assume the code runs correctly on modern Julia. The goal is to identify places where the package's own API would feel surprising or inconsistent to a user who learned Julia in the modern era (1.6+), by comparison with the conventions established by Base and the standard library.
@@ -10,9 +12,7 @@ The package module name is determined from `Project.toml`.
 
 ## Phase 1 — Inventory the public API
 
-Use a subagent to read all files in `src/` and build the inventory. The subagent should identify every exported or `public`-annotated function, macro, and type, recording for each function its full set of method signatures (argument names, types, and keyword arguments). Also note functions not exported but intended for `Module.name`-style use (e.g., documented but not exported).
-
-The subagent should return a structured list — not the raw source. The main session works from this list.
+Invoke the `review-api-explorer` subagent on the current working directory. It will return a structured inventory of all public method signatures. Work from that inventory — do not re-read the source — to run the convention checks below.
 
 ---
 
