@@ -78,6 +78,10 @@ Across the package's own API (not by comparison with Base), look for:
 - Functions that differ in argument order for no apparent reason compared to closely related functions in the same package
 - Inconsistent keyword argument names across related functions (e.g., `dims` in one function but `dim` in another, or `tol` vs `atol` for tolerance)
 
+### 2k. Overly-restrictive type annotations
+
+Argument types should generally be tight enough to control dispatch. Look for signatures that appear to be inappropriately narrow.
+
 ---
 
 ## Phase 3 — Compile the report
@@ -110,7 +114,7 @@ For each approved change:
 1. Update the function signature.
 2. If a compatibility shim is appropriate (Tier 2), add a deprecated forwarding method using `Base.@deprecate` or a manual deprecation warning.
 3. Update all callers *within the package* (tests, internal uses, examples, docstrings).
-4. Run tests via the MCP Julia session to confirm nothing regressed.
+4. Run tests via the MCP Julia session to confirm nothing regressed. If the package doesn't use Aqua or `Test.detect_ambiguities`, run `Test.detect_ambiguities` via MCP and check whether there are new ambiguities caused by changes.
 5. Commit with a message describing the API change.
 
 Do not batch all changes into one commit — commit each logical group (e.g., "all dimension-argument changes") separately so the history is readable.
