@@ -40,5 +40,3 @@ Summarize the results for the user. Propose fixes for any detected problems (e.g
 ## 4. Add to test suite
 
 Once issues are resolved, add `test_explicit_imports` to the test suite (inside the main `@testset` block) to prevent regressions.
-
-Commit all changes.

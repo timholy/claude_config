@@ -8,4 +8,4 @@ Ensure the Julia package in the current directory has an appropriate `.gitignore
 - `Manifest.toml` and `Manifest-v*.toml` (in root and in `docs/` if present)
 - `docs/build/` if the package has Documenter docs
 
-Check the existing `.gitignore` (if any) and add only what is missing. Do not remove existing entries. Commit the result with a message like "Update .gitignore".
+Check the existing `.gitignore` (if any) and add only what is missing. Do not remove existing entries.

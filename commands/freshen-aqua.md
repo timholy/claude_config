@@ -46,5 +46,3 @@ Add the following badge to the README (after any existing badges):
 ```
 [![Aqua QA](https://juliatesting.github.io/Aqua.jl/dev/assets/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 ```
-
-Commit all changes.
