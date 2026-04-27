@@ -12,7 +12,7 @@ The package module name is determined from `Project.toml`.
 
 ## Phase 1 — Inventory the public API
 
-Invoke the `review-api-explorer` subagent on the current working directory. It will return a structured inventory of all public method signatures. Work from that inventory — do not re-read the source — to run the convention checks below.
+Invoke the `julia-api-inventory` subagent on the current working directory. It will return a structured inventory of all public method signatures. Work from that inventory — do not re-read the source — to run the convention checks below.
 
 ---
 

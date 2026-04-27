@@ -14,7 +14,7 @@ The package module name is determined from `Project.toml`.
 
 ## Phases 1 + 2 — Understand the package and build a conceptual map
 
-Invoke the `review-design-explorer` subagent on the current working directory. It will return a **purpose summary** (Phase 1) and a **conceptual map** of types and operations (Phase 2). Work from those two artifacts — do not re-read the source — to run the coherence checks below.
+Invoke the `pkg-conceptual-mapper` subagent on the current working directory. It will return a **purpose summary** (Phase 1) and a **conceptual map** of types and operations (Phase 2). Work from those two artifacts — do not re-read the source — to run the coherence checks below.
 
 ---
 
