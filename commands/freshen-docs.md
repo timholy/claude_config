@@ -20,6 +20,8 @@ Summarize findings and suggestions for the user. **[pause for approval]** Then i
 
 Code examples in documentation should use `jldoctest` blocks where feasible so they are verified during CI. `jldoctest` output must match exactly, so ensure it is deterministic: use fixed inputs rather than `rand()`, and watch for unordered collections (`Dict`, `Set`), platform-sensitive numeric formatting, or object addresses in `show` output — restructure the assertion (e.g., sort and collect an unordered result) to avoid fragility. Examples with expensive setup, side effects, or inherently non-deterministic output are acceptable exceptions.
 
+Unless instructed otherwise, any untested examples (README or untested `/docs` examples) should be tested via MCP to be certain they work. You may take it for granted that the user has issued `using PkgName` prior to running the example. Other setup, module-qualification, etc., should be spelled out.
+
 If adding or updating Documenter docs:
 - Update the CI YAML to build and deploy documentation
 - If the repo is private, ensure the `DOCUMENTER_KEY` secret is passed to `julia-docdeploy` (the modern `julia-docdeploy` action handles SSH setup internally when given this secret — no manual SSH key steps are needed)

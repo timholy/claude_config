@@ -46,6 +46,7 @@ Check each docstring for:
 - Outdated argument lists (compare docstring signatures against `methods()` output)
 - Missing return-value description
 - Clarity, conciseness, and standard Julia docstring style (indented signatures, backtick-quoted names, etc.)
+- Whether it has an example (not required, but typically useful for anything of moderate complexity or higher)
 
 If a specific issue requires implementation context to resolve, use the `:path` and `:linenumber` fields from `docstr.data` to read only the relevant lines — but only in a fresh Julia session, as Revise does not update these fields when source is edited.
 
@@ -68,10 +69,12 @@ Reserve separate docstrings for methods that differ substantially in behavior or
 
 Report to the user:
 - Symbols missing docstrings (listed, separated into exported vs. public-but-not-exported)
-- Existing docstrings with issues (outdated signatures, clarity problems, style inconsistencies)
+- Existing docstrings with issues (outdated signatures, clarity problems, style inconsistencies, missing examples)
 
 **[pause for approval]** Wait for the user to confirm which issues to fix before proceeding.
 
 ## 4. Implement
 
 Write new docstrings and fix approved issues. When making changes, instead of reading full source files, where possible use targeted reads/writes using the file and line numbers extracted during the audit. To avoid changing line numbers for future edits, this may require you to edit files starting at the end and working your way towards the beginning.
+
+Any examples should be tested via MCP to be certain they work. You may take it for granted that the user has issued `using M` prior to running the example. Other setup, module-qualification, etc., should be spelled out.
