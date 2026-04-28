@@ -1,5 +1,7 @@
 ---
 description: Format a Julia package with runic, commit as a standalone PR, update .git-blame-ignore-revs, and install the runic post-edit hook
+model: Sonnet
+effort: low
 ---
 
 Format the Julia package in the current directory using `runic`, following these steps in order:

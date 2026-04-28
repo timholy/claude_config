@@ -1,5 +1,7 @@
 ---
 description: Update .gitignore for a Julia package to cover coverage files, manifests, and docs build artifacts
+model: Sonnet
+effort: low
 ---
 
 Ensure the Julia package in the current directory has an appropriate `.gitignore`. The following must be covered, anywhere they appear:

@@ -1,5 +1,7 @@
 ---
 description: Add ExplicitImports.jl to a Julia package, analyze import usage, fix problems, and add to the test suite
+model: Sonnet
+effort: low
 ---
 
 ## 1. Add ExplicitImports.jl as a test dependency
