@@ -114,10 +114,12 @@ For each approved change:
 1. Update the function signature.
 2. If a compatibility shim is appropriate (Tier 2), add a deprecated forwarding method using `Base.@deprecate` or a manual deprecation warning.
 3. Update all callers *within the package* (tests, internal uses, examples, docstrings).
-4. Run tests via the MCP Julia session to confirm nothing regressed. If the package doesn't use Aqua or `Test.detect_ambiguities`, run `Test.detect_ambiguities` via MCP and check whether there are new ambiguities caused by changes.
-5. Commit with a message describing the API change.
+4. Add tests for any new functionality
+5. Run tests via the MCP Julia session to confirm nothing regressed.
+6. If the package doesn't use Aqua or `Test.detect_ambiguities`, run `Test.detect_ambiguities` via MCP and check whether there are new ambiguities caused by changes.
 
 Do not batch all changes into one commit — commit each logical group (e.g., "all dimension-argument changes") separately so the history is readable.
+Prepare a commit message but wait for user approval before committing.
 
 ---
 

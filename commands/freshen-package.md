@@ -8,7 +8,7 @@ Before starting, check whether the repository has a file `.claude/freshen-packag
 - If it does not exist, create the file, writing one line per step below in the order they appear. On each line, write "status: name", where `status` is one of "TODO", "Optional", or "DONE", and `name` is the title of the step. Items in the steps below already use this format in their markdown header string.
 - If it does exist, read the file and determine which items (if any) do not have status "DONE". **If no items remain, inform the user and stop executing this skill.**
 
-Perform the next unfinished step, unless it is "optional" in which case you should ask the user for their intent, moving to the next if it is declined.
+Perform the next unfinished step. If it is "optional" ask the user for their intent, moving to the next if it is declined.
 
 After completing a step:
 
