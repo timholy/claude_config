@@ -119,6 +119,26 @@ inner_fn() = "inner"
 end # _Inner
 end # _Outer
 
+# --- Type alias with its own docstring ---
+
+module _WithAlias
+export BaseType, AliasType
+"""
+    BaseType{T}
+
+The base type.
+"""
+struct BaseType{T}
+    x::T
+end
+"""
+    AliasType
+
+A type alias for `BaseType{Int}` with its own distinct docstring.
+"""
+const AliasType = BaseType{Int}
+end # _WithAlias
+
 # --- Generic binding (constant) ---
 
 module _WithConst
@@ -196,6 +216,18 @@ using Test
         @test occursin("Auditing module", out)
         ms = findall("Auditing module", out)
         @test length(ms) >= 2
+    end
+
+    @testset "type alias shows its own docstring, not the base type's" begin
+        out = capture_audit(_TestPkg._WithAlias)
+        @test occursin("A type alias for", out)
+        @test !occursin("Function AliasType has no docstring", out)
+        # The alias docstring and base type docstring are distinct
+        alias_pos = findfirst("A type alias for", out)
+        base_pos  = findfirst("The base type", out)
+        @test !isnothing(alias_pos)
+        @test !isnothing(base_pos)
+        @test alias_pos != base_pos
     end
 
     @testset "generic binding (constant) is shown" begin

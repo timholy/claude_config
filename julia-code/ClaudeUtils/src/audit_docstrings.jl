@@ -19,7 +19,13 @@ function audit_docstrings(mod::Module, top::Module=mod, io::IO=stdout)
         obj = getglobal(mod, name)
         if isa(obj, Function) || isa(obj, Type)
             println(io, "\n---")
-            doc = Base.Docs.doc(obj)
+            # Prefer binding-specific lookup so type aliases (e.g. Tile1 = Tile{T,1,N})
+            # resolve to their own docstring rather than the base type's.
+            # Fall back to object-based lookup when the binding yields nothing from this module,
+            # which handles extended external functions (e.g. TileTrees extending LinearAlgebra.normalize).
+            let bdoc = Base.Docs.doc(Base.Docs.Binding(mod, name))
+                doc = any(r -> inmodule(r.data[:module], top), bdoc.meta[:results]) ? bdoc : Base.Docs.doc(obj)
+            end
             if doc === nothing
                 println(io, "\nFunction $(name) has no docstring.")
             else
