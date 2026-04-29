@@ -29,7 +29,7 @@ Using the MCP Julia session, execute the following two calls in sequence.
 
 Call 1:
 ```
-julia_eval(code='include(expanduser("~/.claude/src/audit_docstrings.jl"))', env_path="<package_path>", julia_cmd="julia +1")
+julia_eval(code='include(expanduser("~/.claude/julia-code/ClaudeUtils/src/audit_docstrings.jl"))', env_path="<package_path>", julia_cmd="julia +1")
 ```
 
 Call 2:
@@ -40,6 +40,8 @@ julia_eval(code='using MyPackage\naudit_docstrings(MyPackage)', env_path="<packa
 Replace `MyPackage` with the actual module name and `<package_path>` with the package directory. If the module name or path was not provided to you, request clarification from the parent agent before proceeding.
 
 Capture the full text output. If either call errors, report the error verbatim to the parent agent and stop — do not attempt to recover by reading source files or exploring the package manually.
+
+**Trust the audit output for coverage.** If a symbol does not appear in the audit output, it is not exported or public and requires no further investigation. Do not use `names()`, `methods()`, `@doc`, or other queries to independently verify what is or isn't exported or to look up signatures — all of that information is already present in the audit output. No follow-up `julia_eval` calls are needed or permitted for coverage or signature checking.
 
 **Important**: Do not use `Pkg.test()`. Do not use `xvfb-run`.
 
@@ -67,9 +69,8 @@ For each symbol, track:
 ## Step 3: Check Each Docstring Against These Criteria
 
 ### A. Outdated or Incorrect Argument Lists
-- Compare the signature(s) shown in the docstring against the actual method signature from the audit output.
+- Compare the signature(s) shown in the docstring against the actual method signatures in the `--` Method blocks of the audit output.
 - Flag any argument names, types, or counts that do not match.
-- Use `methods(MyPackage.symbol_name)` via MCP if you need to cross-check all signatures for a function.
 
 ### B. Missing Return-Value Description
 - Flag any function or method docstring that describes what the function does but does not mention what it returns.
@@ -121,7 +122,7 @@ However, if methods differ substantially in behavior, purpose, or return value, 
 
 ## Step 4: Handling Ambiguous Audit Output
 
-If the audit output for a symbol is ambiguous or malformed — e.g., the docstring content is a raw dump you cannot parse, a path or line number is missing, or you cannot determine the method signature from the output — do **not** attempt to recover by reading source files. Instead:
+If the audit output for a symbol is ambiguous or malformed — e.g., the docstring content is a raw dump you cannot parse, or a path or line number is missing — do **not** attempt to recover by reading source files. Instead:
 - Omit the symbol from the deficit report.
 - Append it to a **"Subagent Bugs"** section at the end of your report, with the symbol name, the raw audit output for that symbol, and a one-line description of what was unclear or missing.
 
