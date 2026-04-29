@@ -6,6 +6,7 @@ description: >
   exactly one chunk, updates the plan, and prepares a clean handoff for the next session.
   Only use this skill when an ANALYSIS_PLAN.md exists in the project and the user wants to make
   progress — do not implement ad hoc without it.
+# Recommended invocation: opus model, /effort medium
 ---
 
 # New Analysis Implement
@@ -19,6 +20,8 @@ next session can begin without any context from this one.
 Read the following files before doing anything else:
 
 1. **`ANALYSIS_PLAN.md`** — the full plan. Identify:
+   - The project maturity target (`script` / `package` / `releasable-package`)
+   - The package name and whether this extends an existing `dev`'d package
    - The next chunk with status `not-started` whose dependencies are all `complete`
    - Any open questions that might affect your work
 2. **`ANALYSIS_SESSION.md`** (if it exists) — the previous session's handoff note.
@@ -44,16 +47,35 @@ right?" is appropriate. Do not wait for explicit confirmation on simple chunks; 
 
 ## Step 3: Implement
 
-Implement the chunk. Follow these principles:
+Implement the chunk. The maturity target governs several decisions below — read it from the
+plan and apply the corresponding behavior throughout.
+
+### Code placement
+
+**For `script` target:**
+- Write code directly in scripts or notebooks in the project root or a `scripts/` folder
+- No package structure required
+
+**For `package` and `releasable-package` targets:**
+- Analysis logic (functions, types, constants) belongs in `src/` (or the language equivalent)
+- Scripts that run the analysis belong in `scripts/` and should be thin:
+  import the package, call functions, save outputs
+- Tests belong in `test/` or `tests/` and must be runnable by the standard test runner
+- **Never write substantive logic in a script that belongs in the package**
 
 ### Code quality
-- Write the implementation in the project's specified language and style
+
+- Write in the project's specified language and style
 - Prefer explicit over clever; this code will be read and modified by others
-- Add a docstring or comment block to every function describing its contract:
+- Add a docstring or comment block to every public function describing its contract:
   what it expects, what it returns, what it assumes
+- For `releasable-package` targets: docstrings must be complete and follow the language
+  convention (Julia: `"""..."""` above the function; Python: NumPy or Google style;
+  R: roxygen2; MATLAB: leading comment block)
 - Do not add dependencies not already in the environment without flagging it to the user
 
 ### Verification (moderate stance)
+
 Apply the following decision logic for each chunk:
 
 **Write tests when:**
@@ -71,14 +93,20 @@ Apply the following decision logic for each chunk:
 - Add at least lightweight assertions (input shape, type checks, non-null returns) even
   where full tests aren't warranted
 - Never mark a chunk complete without running it on real or representative data
+- For `package`/`releasable-package` targets: the test runner must pass cleanly before
+  the chunk is marked `complete` — not just the new tests, but the full suite
 
-**Testing approach by language:**
-- Python: `pytest`, standard `assert`, or `unittest` — prefer `pytest`
-- Julia: `@test` / `@testset` from `Test` stdlib — use these; they are idiomatic
-- R: `testthat` if the project already uses it; otherwise inline `stopifnot()` assertions
-- MATLAB: `matlab.unittest` if the project uses it; otherwise inline `assert()` calls
+**Testing approach and location by language:**
+
+| Language | Framework | Location | Run command |
+|---|---|---|---|
+| Julia | `Test` stdlib: `@test`, `@testset` | `test/runtests.jl` | `] test` |
+| Python | `pytest` | `tests/test_*.py` | `pytest` |
+| R | `testthat` preferred; `stopifnot()` inline if project doesn't use it | `tests/testthat/` | `R CMD check` or `testthat::test_dir()` |
+| MATLAB | `matlab.unittest` preferred; `assert()` inline if not used | `tests/Test*.m` | `runtests("tests")` |
 
 ### Scope discipline
+
 - Implement **only** the current chunk
 - If you notice problems in adjacent code while working, record them in the plan's
   Open Questions section — do not fix them now
@@ -113,6 +141,9 @@ This file should be self-contained — assume the next session has no memory of 
 ```markdown
 # Session Handoff — [date]
 
+## Project maturity target
+[`script` / `package` / `releasable-package`] — [package name, or "n/a"]
+
 ## What was just completed
 CHUNK-XXX: [name]
 [2–3 sentences describing what was implemented and how it works]
@@ -123,7 +154,9 @@ CHUNK-XXX: [name]
 
 ## State of the codebase
 - Files created or modified: [list]
-- Entry point(s): [e.g., "run `main.py` to execute the pipeline end to end"]
+- Package loads cleanly: [yes / not applicable]
+- Test suite passes: [yes / not applicable / blocked — see below]
+- Entry point(s): [e.g., "run `julia scripts/reproduce_fig1.jl` to execute end to end"]
 - Known issues: [or "none"]
 
 ## Next chunk
@@ -139,8 +172,9 @@ CHUNK-XXX: [name]
 Tell the user:
 
 1. What was completed and what the verification showed
-2. A one-line preview of the next chunk
-3. The following prompt, word for word:
+2. Whether the full test suite passes (for package targets)
+3. A one-line preview of the next chunk
+4. The following prompt, word for word:
 
 > **Ready for the next session.** Please run `/clear` to reset the context window, then
 > run `/new-analysis-implement` again. The plan and session notes will orient the next
