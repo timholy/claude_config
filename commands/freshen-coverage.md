@@ -4,11 +4,13 @@ description: Run Julia test coverage analysis, identify gaps, propose new tests,
 
 ## 1. Run tests with coverage
 
-Run the test suite with coverage enabled:
+Run the test suite with coverage enabled, typically by
 
 ```
-julia --project --code-coverage=@ -e 'using Revise, TestEnv; TestEnv.activate(); include("test/runtests.jl")'
+julia --project -e 'using Pkg; Pkg.test(; coverage=true)'
 ```
+
+There may be some exceptions, e.g., GUI packages that might require `xvfb-run`.
 
 ## 2. Analyze coverage
 
