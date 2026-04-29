@@ -1,0 +1,10 @@
+name = "ClaudeUtils"
+uuid = "708066c6-0798-41b0-9d3c-e01388f40cf3"
+version = "0.1.0"
+authors = ["Tim Holy <tim.holy@gmail.com>"]
+
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+
+[compat]
+JSON = "1.5.1"

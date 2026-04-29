@@ -29,7 +29,7 @@ Using the MCP Julia session, execute the following two calls in sequence.
 
 Call 1:
 ```
-julia_eval(code='include(expanduser("~/.claude/src/audit_docstrings.jl"))', env_path="<package_path>", julia_cmd="julia +1")
+julia_eval(code='include(expanduser("~/.claude/julia-code/ClaudeUtils/src/audit_docstrings.jl"))', env_path="<package_path>", julia_cmd="julia +1")
 ```
 
 Call 2:
