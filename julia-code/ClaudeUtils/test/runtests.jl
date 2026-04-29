@@ -4,16 +4,11 @@ using ClaudeUtils
 
 # ---------------------------------------------------------------------------
 # Test fixtures
-#
-# _ParentA / _WithDocs: exercises the bug — a module that adds a documented
-# method to an external function.  Before the fix, the docstring was silently
-# dropped because its typesig was Tuple{TypeA}, not Union{}.
-#
-# _ParentB / _WithoutDocs: control case — method added with no docstring at
-# all, should still be reported as undocumented.
 # ---------------------------------------------------------------------------
 
 module _TestPkg
+
+# --- Extending external functions ---
 
 module _ParentA
 export parent_fn_a
@@ -43,14 +38,99 @@ module _WithoutDocs
 import .._ParentB
 export parent_fn_b, TypeB
 const parent_fn_b = _ParentB.parent_fn_b
+"A test type."
 struct TypeB end
 _ParentB.parent_fn_b(::TypeB) = 99
 end # _WithoutDocs
 
+# --- Module-owned functions ---
+
+module _OwnedFns
+export documented_fn, undocumented_fn, per_method_fn
+
+"""
+    documented_fn(x)
+
+A well-documented function.
+"""
+documented_fn(x) = x
+
+undocumented_fn(x) = x
+
+"""
+    per_method_fn(x::Int)
+
+Handle an integer input.
+"""
+per_method_fn(x::Int) = x * 2
+
+"""
+    per_method_fn(x::String)
+
+Handle a string input.
+"""
+per_method_fn(x::String) = x * "!"
+end # _OwnedFns
+
+# --- Module-level docstring ---
+
+"""A module with its own docstring."""
+module _DocModule
+export mod_fn
+"""
+    mod_fn()
+
+Return nothing.
+"""
+mod_fn() = nothing
+end # _DocModule
+
+# --- No module-level docstring ---
+
+module _NoDocModule
+export nodoc_fn
+"""
+    nodoc_fn()
+
+A documented function in an undocumented module.
+"""
+nodoc_fn() = nothing
+end # _NoDocModule
+
+# --- Submodule recursion ---
+
+module _Outer
+export outer_fn, _Inner
+"""
+    outer_fn()
+
+The outer function.
+"""
+outer_fn() = "outer"
+
+module _Inner
+export inner_fn
+"""
+    inner_fn()
+
+The inner function.
+"""
+inner_fn() = "inner"
+end # _Inner
+end # _Outer
+
+# --- Generic binding (constant) ---
+
+module _WithConst
+export THE_ANSWER
+"The answer to life, the universe, and everything."
+const THE_ANSWER = 42
+end # _WithConst
+
 end # _TestPkg
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Helper
 # ---------------------------------------------------------------------------
 
 function capture_audit(mod, top=mod)
@@ -67,15 +147,69 @@ using Test
 
 @testset "audit_docstrings" begin
 
-    @testset "documented method on extended function is not reported as missing" begin
+    @testset "extending external function: documented method is not flagged" begin
         out = capture_audit(_TestPkg._WithDocs)
         @test !occursin("parent_fn_a has no docstring", out)
         @test occursin("Do something with a TypeA", out)
     end
 
-    @testset "undocumented method on extended function is flagged" begin
+    @testset "extending external function: undocumented method is flagged" begin
         out = capture_audit(_TestPkg._WithoutDocs)
+        @test occursin("parent_fn_b has no docstring", out)
+    end
+
+    @testset "owned function: docstring is shown" begin
+        out = capture_audit(_TestPkg._OwnedFns)
+        @test occursin("A well-documented function", out)
+        @test !occursin("Function documented_fn has no docstring", out)
+    end
+
+    @testset "owned function: missing docstring is flagged" begin
+        out = capture_audit(_TestPkg._OwnedFns)
+        @test occursin("undocumented_fn has no docstring", out)
+    end
+
+    @testset "per-method docstrings on owned function" begin
+        out = capture_audit(_TestPkg._OwnedFns)
+        @test occursin("Handle an integer input", out)
+        @test occursin("Handle a string input", out)
+    end
+
+    @testset "module-level docstring is shown" begin
+        out = capture_audit(_TestPkg._DocModule)
+        @test occursin("A module with its own docstring", out)
+        @test !occursin("_DocModule has no docstring", out)
+    end
+
+    @testset "missing module-level docstring is flagged" begin
+        out = capture_audit(_TestPkg._NoDocModule)
         @test occursin("has no docstring", out)
+        # But the owned function inside is still documented
+        @test occursin("A documented function in an undocumented module", out)
+    end
+
+    @testset "submodule recursion" begin
+        out = capture_audit(_TestPkg._Outer)
+        @test occursin("The outer function", out)
+        @test occursin("The inner function", out)
+        # Both module boundaries appear
+        @test occursin("Auditing module", out)
+        ms = findall("Auditing module", out)
+        @test length(ms) >= 2
+    end
+
+    @testset "generic binding (constant) is shown" begin
+        out = capture_audit(_TestPkg._WithConst)
+        @test occursin("THE_ANSWER", out)
+        @test occursin("Generic binding", out)
+    end
+
+    @testset "output structure markers" begin
+        out = capture_audit(_TestPkg._OwnedFns)
+        @test occursin("----- Auditing module", out)
+        @test occursin("----- Done auditing module", out)
+        @test occursin("\n---", out)   # function block delimiter
+        @test occursin("\n--\n", out)  # method block delimiter
     end
 
 end
