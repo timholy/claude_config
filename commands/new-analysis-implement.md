@@ -45,6 +45,24 @@ Before writing any code, tell the user:
 Wait briefly — give the user a chance to redirect before you begin. A short "does this look
 right?" is appropriate. Do not wait for explicit confirmation on simple chunks; use judgment.
 
+## Special case: fixing a reported bug
+
+If the user reports that code failed on real data after tests passed, treat this as a
+two-part task before touching any fix:
+
+1. **Diagnose the test gap.** Ask: what would a test have looked like that caught this
+   failure? If the failure mode can be reproduced with synthetic or in-repo data, write
+   a failing test *first* — before changing any logic. This makes the fix verifiable and
+   prevents the same class of bug from silently reappearing.
+
+2. **Fix the bug so the new test passes.** Then verify the full suite still passes.
+
+If the failure genuinely requires real external data that cannot be captured in a
+portable test, document the gap in the session notes instead of skipping silently.
+
+If the user has given explicit instructions about how to proceed (e.g., "just fix it"),
+follow those rather than this default.
+
 ## Step 3: Implement
 
 Implement the chunk. The maturity target governs several decisions below — read it from the
@@ -202,6 +220,12 @@ something like:
 > decision made in this chunk and can explain, justify, or revise anything while it's
 > still fresh. Please look over the code (including any tests), ask any questions you
 > have, and suggest any improvements you'd like. We can iterate here before closing out.
+
+If you suggested a pipeline or end-to-end command the user can run on real data, explicitly
+ask them to try it now and report back before committing. If it errors, that is a signal
+that the tests missed something: diagnose the gap, add a regression test that would have
+caught the failure (if reproducible without external data), then fix the bug — all while
+this session's context is still live.
 
 Once the user is satisfied with the changes, prompt them to commit:
 
