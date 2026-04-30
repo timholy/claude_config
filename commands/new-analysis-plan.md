@@ -151,12 +151,17 @@ strategy, but flag your expectation here):
 |---|---|
 | Data reconnaissance | `DATA_NOTES.md` written; manual review |
 | Package scaffolding | Package loads cleanly; test runner passes on empty suite |
-| Data loading / parsing | Shape checks, dtype checks, known-value assertions |
-| Transformation / cleaning | Before/after spot checks, invariant assertions |
-| Algorithm / model | Unit tests against reference values or analytical results |
+| Data loading / parsing | Synthetic in-memory fixture with known shape/values; no external files |
+| Transformation / cleaning | Invariant assertions on synthetic data (symmetry, invertibility, conservation) |
+| Algorithm / model | Unit tests against analytical results or a simple reference implementation |
 | Visualization | Manual review (note this explicitly) |
-| I/O / export | Round-trip check or file existence + spot check |
-| Orchestration / pipeline | Integration test over small synthetic input |
+| I/O / export | Round-trip check using a temp file or in-memory buffer; no real data paths |
+| Orchestration / pipeline | Integration test over a small synthetic input constructed in the test itself |
+
+**Portability rule for `package`/`releasable-package` targets**: every committed test must
+pass on a clean machine with no access to the project's data files or analysis outputs.
+Use synthetic fixtures with known ground-truth answers; validate on real data during
+development, but record that in session notes rather than the test suite.
 
 ## Step 5: Order the Chunks
 

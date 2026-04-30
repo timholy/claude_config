@@ -86,15 +86,34 @@ Apply the following decision logic for each chunk:
 
 **Document rationale instead of writing tests when:**
 - The output is inherently visual (plots, rendered outputs) — note "requires manual review"
-- The correct output is unknown until the analysis runs (genuinely exploratory work)
+- The correct answer is genuinely unknown until the analysis runs (truly exploratory work)
 - The chunk is a thin wrapper around a well-tested library with no custom logic
+
+**Test portability — required for `package` and `releasable-package` targets:**
+
+Committed tests must be **portable**: they must pass on any machine, without access
+to external data files, downloaded datasets, or outputs produced by a prior analysis run.
+
+- **Prefer synthetic ground-truth fixtures**: construct small in-memory inputs whose
+  correct outputs can be computed analytically, by a simpler reference formula, or by
+  inspection. Encode both the input and the expected output directly in the test file.
+- **Validate on real data during development, but do not commit that as a test.**
+  Running a function on your actual dataset to sanity-check it is good practice; turning
+  that run into a committed test that opens a file outside the repo is not.
+- **For I/O functions**, construct a minimal in-memory or in-repo fixture (a short string
+  literal, a tiny synthetic array written to a `tempname()` / `tmp_path`) rather than
+  pointing at a real data file.
+- **For algorithms**, if an exact analytical answer exists, test against it; if not,
+  test structural properties (monotonicity, symmetry, conservation law, round-trip
+  invertibility) that hold for any valid input.
 
 **In all cases:**
 - Add at least lightweight assertions (input shape, type checks, non-null returns) even
   where full tests aren't warranted
-- Never mark a chunk complete without running it on real or representative data
-- For `package`/`releasable-package` targets: the test runner must pass cleanly before
-  the chunk is marked `complete` — not just the new tests, but the full suite
+- Verify behavior on real or representative data during development before marking a
+  chunk complete, but record that verification in the session notes, not in the test suite
+- For `package`/`releasable-package` targets: the portable test runner must pass cleanly
+  before the chunk is marked `complete` — not just the new tests, but the full suite
 
 **Testing approach and location by language:**
 
