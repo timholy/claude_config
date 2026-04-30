@@ -174,7 +174,22 @@ Tell the user:
 1. What was completed and what the verification showed
 2. Whether the full test suite passes (for package targets)
 3. A one-line preview of the next chunk
-4. The following prompt, word for word:
+
+Then explicitly invite the user to review the work before moving on. This is the ideal
+moment to do so: the code is fresh, you have full context, and changes are cheap. Say
+something like:
+
+> **Now is the best time to review these changes.** I have complete context on every
+> decision made in this chunk and can explain, justify, or revise anything while it's
+> still fresh. Please look over the code (including any tests), ask any questions you
+> have, and suggest any improvements you'd like. We can iterate here before closing out.
+
+Once the user is satisfied with the changes, prompt them to commit:
+
+> When you're happy with the changes, please commit them (e.g., `git add -p && git commit`
+> or via your preferred tool) so this chunk is captured as a clean, standalone unit of work.
+
+After the user has committed (or explicitly declined), issue the handoff prompt:
 
 > **Ready for the next session.** Please run `/clear` to reset the context window, then
 > run `/new-analysis-implement` again. The plan and session notes will orient the next
