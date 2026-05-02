@@ -58,3 +58,15 @@ when the MCP session cannot be reconfigured.
   `convert(::Type{T}, x)::T`. If the caller writes `convert(Vector{Real}, list)`,
   the return type should be `Vector{Real}` and not `Vector{T}` for some concrete
   `T<:Real`. The same goes for type-constructors.
+
+# Analysis-project conventions
+
+Projects driven by `/new-analysis-plan` and `/new-analysis-implement` use two
+stable paths:
+
+- `artifacts/CHUNK-XXX/` — human-readable per-chunk outputs (plots, tables,
+  summary stats). Predictable; safe to point users at.
+- `scripts/explore_chunk_XXX.{jl,py,R,m}` — Revise-friendly playground that
+  generates the chunk's artifact and serves as the entry point for interactive
+  poking. For Julia, these scripts use `using Revise; using <Package>` so the
+  MCP session stays warm.
