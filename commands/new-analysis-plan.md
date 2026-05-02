@@ -62,7 +62,38 @@ a chunk's functionality seems generically useful beyond this project, consider
 whether it warrants its own package. Future steps should take this possibility
 into account.
 
-## Step 3: Package Scaffolding Guidance
+## Step 3: Establish Target Outputs
+
+Before decomposing the project into chunks, sketch with the user what the
+project's *final* outputs are expected to look like. These are the figures,
+tables, or success criteria that, if produced and correct, would constitute the
+project being "done."
+
+**This is a draft, not a contract.** The form of the outputs will almost
+certainly shift as understanding accumulates — that is precisely the point of
+capturing them now. Crown-jewel chunks (see Step 5) are the moments where this
+section is expected to be revised.
+
+For each anticipated output, capture:
+
+- A short name (e.g., "Figure 1: residual histogram by group")
+- One or two sentences describing what it shows and what would make it
+  satisfying / unsatisfying
+- Optional: a rough verbal sketch ("x-axis: time bin; y-axis: count; expect a
+  bimodal distribution centered near 0 and 0.7")
+
+Ask the user to provide these or sketch them collaboratively. Do not fabricate
+target outputs the user has not articulated or assented to.
+
+**For genuinely exploratory projects** where the form of success is not yet
+known, record a single entry `exploratory — to be determined` along with a
+brief note on what early chunks should produce to begin shaping the targets.
+In this case, plan an early `investigate` chunk whose explicit deliverable is
+"propose 1–3 candidate target outputs based on what the data looks like," and
+make the eventual integrative chunk depend on it and be marked as a
+crown-jewel.
+
+## Step 4: Package Scaffolding Guidance
 
 When the maturity target is `package` or `releasable-package`, include an explicit
 `scaffold-package` chunk before any analysis logic is written. Record the expected
@@ -128,7 +159,7 @@ The key principle across all languages: **analysis logic lives in the package (`
 equivalent), analysis scripts live outside it (`scripts/`)**. Scripts are thin — they
 import the package, call functions, and produce outputs. They are not where the work lives.
 
-## Step 4: Decompose into Chunks
+## Step 5: Decompose into Chunks
 
 A chunk is a **single function, module, or self-contained capability** with:
 - Clear inputs and outputs
@@ -163,7 +194,42 @@ pass on a clean machine with no access to the project's data files or analysis o
 Use synthetic fixtures with known ground-truth answers; validate on real data during
 development, but record that in session notes rather than the test suite.
 
-## Step 5: Order the Chunks
+**Crown-jewel chunks:**
+
+A small number of chunks (typically 1–3, late and integrative) are *crown jewels*:
+chunks whose framing is expected to shift meaningfully once prior chunks have produced
+artifacts and the user has built intuition. These are usually the chunks closest to the
+project's Target Outputs — the synthesis figure, the headline comparison, the final model
+evaluation.
+
+Mark such chunks with `Crown-jewel: yes`. Default is `no`.
+
+The implementer treats `Crown-jewel: yes` as a signal to *re-plan before implementing* —
+not as a status. See `/new-analysis-implement` for the behavior. `Crown-jewel` is a flag,
+orthogonal to `Status`.
+
+Suggest crown jewels to the user and ask for confirmation; do not assign the flag
+unilaterally. When unsure, prefer marking late integrative chunks `yes` rather than `no` —
+the cost of a re-plan checkpoint is small, and the benefit of catching a stale framing is
+large.
+
+**Snapshot tier (for visual / manual-review chunks):**
+
+For any chunk whose verification is "manual review" or otherwise visual, record a
+`Snapshot tier:` field with one of:
+
+| Tier | When to use |
+|---|---|
+| `none` | No snapshot. Fine for one-off exploratory plots. |
+| `data` | **Default for visual chunks.** Snapshot the underlying numbers (arrays, summary statistics) with a tolerance. Robust across rendering backends and font versions. |
+| `features` | Snapshot a hash of derived features (quantile sketch, peak locations, top-k indices). Use when raw data snapshots are too large. |
+| `image` | Pixel-level image comparison. Reserved for chunks where the visual appearance itself is the deliverable (e.g., publication figure layout). The implementer mediates diffs by loading both images and judging meaningful vs cosmetic. |
+
+Non-visual chunks (algorithmic, I/O, etc.) do not need this field. If the field is
+omitted, the implementer treats it as `none` for non-visual chunks and `data` for visual
+chunks.
+
+## Step 6: Order the Chunks
 
 Produce a dependency-ordered list. The typical order for a `package`-target project is:
 
@@ -177,7 +243,7 @@ Produce a dependency-ordered list. The typical order for a `package`-target proj
 Where the ordering is ambiguous, prefer getting data loading done early — downstream
 chunks are much easier to verify when you can run them on real data.
 
-## Step 6: Write the Plan File
+## Step 7: Write the Plan File
 
 Save the plan as `ANALYSIS_PLAN.md` in the project root (or a location the user specifies).
 
@@ -198,6 +264,14 @@ Use exactly this schema so the implementer can parse it reliably:
 - **Package name(s)**: [e.g. MyProject.jl — or "n/a" for script target]
 - **Extending existing package(s)**: [package name + local path, or "no"]
 
+## Target Outputs
+<!-- Draft sketches of the project's final figures/tables/success criteria. Expected to be
+     revised, especially during crown-jewel re-plans. Use "exploratory — to be determined"
+     if the form of success is unknown. -->
+
+- **[Output name]**: [1–2 sentences on what it shows and what would make it satisfying]
+- **[Output name]**: ...
+
 ## Chunks
 
 ### CHUNK-001: [chunk-name]
@@ -206,11 +280,17 @@ Use exactly this schema so the implementer can parse it reliably:
 - **Outputs**: [Files, data structures, or return values]
 - **Depends on**: [CHUNK-XXX, or "none"]
 - **Verification strategy**: [Suggested approach — implementer may revise]
+- **Snapshot tier**: [none | data | features | image]   <!-- omit or `none` for non-visual chunks -->
+- **Crown-jewel**: no
 - **Status**: `not-started`
 - **Notes**:
 
 ### CHUNK-002: [chunk-name]
 ...
+
+## Decisions
+<!-- Captures answers to any chunks where the implementer paused for input, and outcomes
+     of crown-jewel re-plans. Each entry: date, what was decided, brief rationale. -->
 
 ## Session Log
 <!-- The implementer appends an entry here after each session. -->
@@ -219,15 +299,17 @@ Use exactly this schema so the implementer can parse it reliably:
 <!-- Unresolved ambiguities that may affect implementation. Implementer should surface blockers here. -->
 ```
 
-## Step 7: Brief the User
+## Step 8: Brief the User
 
 After writing the file, tell the user:
 
 1. What the plan covers, how many chunks it contains, and what the maturity target is
 2. Flag any open questions — these should be resolved before implementation begins
-3. Explain the workflow: run `/new-analysis-implement` to begin, and repeat that command
+3. Note any chunks marked `Crown-jewel: yes` and explain that the implementer will pause
+   before those chunks for a re-plan checkpoint, not begin coding immediately
+4. Explain the workflow: run `/new-analysis-implement` to begin, and repeat that command
    at the start of each new session after `/clear`
-4. Remind them that the plan is a living document — they can and should edit it as the
+5. Remind them that the plan is a living document — they can and should edit it as the
    project evolves
 
 ## Important Notes
