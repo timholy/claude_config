@@ -22,7 +22,11 @@ Read the following files before doing anything else:
 1. **`ANALYSIS_PLAN.md`** — the full plan. Identify:
    - The project maturity target (`script` / `package` / `releasable-package`)
    - The package name and whether this extends an existing `dev`'d package
+   - The current `## Target Outputs` section
    - The next chunk with status `not-started` whose dependencies are all `complete`
+   - **Whether that chunk has `Crown-jewel: yes`** — if so, do not implement on
+     this orient pass; you will trigger the re-plan checkpoint described in Step 2a
+   - The chunk's `Snapshot tier` field, if any
    - Any open questions that might affect your work
 2. **`ANALYSIS_SESSION.md`** (if it exists) — the previous session's handoff note.
    Read this to understand decisions made in prior sessions: naming conventions, data
@@ -44,6 +48,42 @@ Before writing any code, tell the user:
 
 Wait briefly — give the user a chance to redirect before you begin. A short "does this look
 right?" is appropriate. Do not wait for explicit confirmation on simple chunks; use judgment.
+
+## Step 2a: Crown-jewel re-plan checkpoint
+
+If the next chunk has `Crown-jewel: yes`, do **not** begin implementation. Instead, run a
+focused re-plan pass:
+
+1. **Re-read prior context** — every artifact under `artifacts/CHUNK-*/`, every explore
+   script under `scripts/explore_chunk_*.{jl,py,R,m}`, the full `Session Log`, and the
+   current `## Target Outputs` section.
+2. **Surface what has shifted in understanding** since the plan was first written. What did
+   prior chunks reveal? Are any assumptions in the chunk's `Description` or in
+   `## Target Outputs` now stale?
+3. **Propose a revised framing** for this chunk. Concretely:
+   - A possibly-revised chunk `Description`
+   - A possibly-revised target output (the figure/table this chunk produces, if any)
+   - Whether the chunk should be split into smaller chunks
+   - Whether other entries in `## Target Outputs` need adjustment in light of what's now known
+4. **Wait for the user** to discuss and approve. This conversation is the point of the
+   checkpoint — do not rush it. Valid outcomes include: leave as planned, edit the
+   `Description`, split the chunk, or revise `## Target Outputs` in place.
+5. **Record the outcome** in `## Decisions` in `ANALYSIS_PLAN.md`:
+   ```
+   **[date] — CHUNK-XXX re-plan**: [What was decided. Brief rationale —
+   especially what changed in understanding from prior chunks.]
+   ```
+   If `## Target Outputs` was revised, edit it in place — both the new wording and the
+   `## Decisions` entry pointing to the change. If the chunk's `Description` changed, edit
+   it in place too.
+6. **Flip the flag.** Change `Crown-jewel: yes` to `Crown-jewel: re-planned` (preserving
+   the audit trail). Then proceed to Step 3 in the *same* session — implementation now
+   happens normally.
+
+If the user decides during the conversation that the chunk should be deferred or split such
+that no implementation happens this session, leave the chunk's `Status` as `not-started`
+(but with `Crown-jewel: re-planned`), and produce a session handoff that documents the
+re-plan only. The next session picks up implementation.
 
 ## Special case: fixing a reported bug
 
@@ -142,6 +182,28 @@ to external data files, downloaded datasets, or outputs produced by a prior anal
 | R | `testthat` preferred; `stopifnot()` inline if project doesn't use it | `tests/testthat/` | `R CMD check` or `testthat::test_dir()` |
 | MATLAB | `matlab.unittest` preferred; `assert()` inline if not used | `tests/Test*.m` | `runtests("tests")` |
 
+**Snapshot testing by tier (for chunks with a `Snapshot tier` field):**
+
+Read the chunk's `Snapshot tier` from the plan and write the snapshot test accordingly.
+A chunk with no field defaults to `none` for non-visual chunks and `data` for visual chunks.
+
+- `none` — no snapshot test.
+- `data` — snapshot the underlying numerical values (arrays, summary statistics) used to
+  draw the figure, using the language's standard approximate-equality with a
+  project-appropriate tolerance. On mismatch: standard test failure.
+- `features` — snapshot a hash or compact summary of derived features (quantile sketch,
+  peak locations, top-k indices). Use when raw arrays are too large to commit. On
+  mismatch: standard test failure.
+- `image` — pixel-level image diff against a blessed reference image stored under
+  `test/snapshots/CHUNK-XXX.png` (or language-equivalent path). On mismatch, the test
+  framework alone cannot decide whether the change is meaningful or cosmetic. The
+  implementer (in a session triggered by the failure) loads both reference and new
+  output, judges visually, and either:
+    - proposes re-blessing (replace the reference), recording the rationale in
+      `## Decisions`, or
+    - flags it as a regression in `## Open Questions` and the chunk's `Notes`, leaving
+      the reference unchanged.
+
 ### Scope discipline
 
 - Implement **only** the current chunk
@@ -149,6 +211,58 @@ to external data files, downloaded datasets, or outputs produced by a prior anal
   Open Questions section — do not fix them now
 - If the chunk turns out to be larger than expected, implement the core logic and
   flag the remainder as a new sub-chunk in the plan
+
+### Per-chunk artifact emission
+
+Every chunk that touches data must produce at least one human-readable artifact under
+`artifacts/CHUNK-XXX/` (with `XXX` matching the chunk ID exactly). Acceptable forms:
+
+- A plot (PNG/SVG/PDF)
+- A small table (CSV/TSV/Markdown)
+- A summary-statistics text file
+- A handful of example records
+
+The path is stable and predictable — humans and future agents both rely on it. Use the
+chunk's verb-phrase name in filenames where helpful, e.g.
+`artifacts/CHUNK-004/residuals_by_group.png`.
+
+**For chunks where this is genuinely not applicable** (package scaffolding, pure refactors,
+dependency-only changes), record `No artifact applicable: [one-line reason]` in the
+chunk's `Notes` field in the plan, and skip both this step and the explore script. Do not
+emit a placeholder artifact.
+
+### Explore script
+
+For every chunk that emits an artifact, also leave a Revise-friendly playground script
+that *generates* that artifact:
+
+| Language | Path |
+|---|---|
+| Julia | `scripts/explore_chunk_XXX.jl` |
+| Python | `scripts/explore_chunk_XXX.py` |
+| R | `scripts/explore_chunk_XXX.R` |
+| MATLAB | `scripts/explore_chunk_XXX.m` |
+
+The script must:
+
+1. Load the package or dependencies (Julia: `using Revise; using <Package>` — never bare
+   `using <Package>` if `<Package>` is the chunk's own package; see `~/.claude/CLAUDE.md`
+   for Revise/MCP conventions).
+2. Construct or load a small, representative input that's ready to run.
+3. Call the chunk's function(s).
+4. Produce the artifact under `artifacts/CHUNK-XXX/`.
+
+The same script that generates the artifact is what the human runs to poke at the chunk
+interactively. Keep it short, readable, and top-to-bottom executable — but written so
+individual blocks can be re-evaluated under Revise without restarting the session.
+
+**For `script` maturity targets** (no package): the explore script is still produced. It
+loads dependencies directly (e.g. `using DataFrames, Plots`) and `include`s the chunk's
+analysis script as needed. The point is the human entry point, which applies regardless
+of package structure.
+
+**For chunks marked "no artifact applicable"**: skip the explore script too. Note this in
+the chunk's `Notes` alongside the artifact note.
 
 ## Step 4: Update the Plan
 
@@ -181,6 +295,17 @@ This file should be self-contained — assume the next session has no memory of 
 ## Project maturity target
 [`script` / `package` / `releasable-package`] — [package name, or "n/a"]
 
+## Look at this first
+- **Artifact**: `artifacts/CHUNK-XXX/[filename]`
+- **What to verify**: [One sentence stating the property the artifact should satisfy.
+  e.g. "Residuals should be approximately symmetric around zero with no obvious group
+  structure."]
+- **Poke at it**: `julia --project scripts/explore_chunk_XXX.jl` (or open in your editor
+  under Revise/MCP and re-evaluate blocks)
+
+<!-- If no artifact was applicable for this chunk, replace this section with a single
+     line: **No artifact this chunk** — [one-line reason, e.g. "package scaffolding only"]. -->
+
 ## What was just completed
 CHUNK-XXX: [name]
 [2–3 sentences describing what was implemented and how it works]
@@ -188,6 +313,12 @@ CHUNK-XXX: [name]
 ## Key decisions made
 - [Decision and rationale]
 - [Decision and rationale]
+
+## Surprises
+<!-- Unexpected findings, anomalies in the data, or design choices the agent had to make
+     that weren't anticipated. Distinct from "Watch out for": Surprises are *what was
+     discovered*; Watch out for is *what to be careful of going forward*. Both are kept. -->
+- [Surprise — what was unexpected, where it showed up, what it means]
 
 ## State of the codebase
 - Files created or modified: [list]
@@ -198,7 +329,9 @@ CHUNK-XXX: [name]
 
 ## Next chunk
 CHUNK-XXX: [name]
-[Brief description of what it needs to do and what inputs it will use]
+[Brief description of what it needs to do and what inputs it will use. If the next chunk
+has `Crown-jewel: yes`, note that the next session will begin with a re-plan checkpoint
+rather than implementation.]
 
 ## Watch out for
 [Any gotchas, fragile assumptions, or things the next session should know before touching the code]
@@ -220,6 +353,9 @@ something like:
 > decision made in this chunk and can explain, justify, or revise anything while it's
 > still fresh. Please look over the code (including any tests), ask any questions you
 > have, and suggest any improvements you'd like. We can iterate here before closing out.
+
+If you'd like to inspect the artifact directly, see `## Look at this first` in
+`ANALYSIS_SESSION.md` for the path and the explore-script command.
 
 If you suggested a pipeline or end-to-end command the user can run on real data, explicitly
 ask them to try it now and report back before committing. If it errors, that is a signal
