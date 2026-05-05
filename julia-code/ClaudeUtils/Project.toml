@@ -5,6 +5,10 @@ authors = ["Tim Holy <tim.holy@gmail.com>"]
 
 [deps]
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-JSON = "1.5.1"
+JSON = "1.5"
+REPL = "1"
+Test = "1"

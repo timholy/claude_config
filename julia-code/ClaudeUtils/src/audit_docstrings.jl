@@ -3,7 +3,7 @@ function audit_docstrings(mod::Module, top::Module=mod, io::IO=stdout)
     Base.VERSION >= v"1.11" || error("audit_docstrings requires a recent Julia release (current: $VERSION). Re-run with julia_cmd=\"julia +1\".")
     println(io, "----- Auditing module: $(mod)")
     # Check for a module-level docstring
-    doc = Base.Docs.doc(mod)
+    doc = Base.Docs.doc(Base.Docs.Binding(mod, nameof(mod)))
     if doc !== nothing
         c = first(doc.content)
         str = sprint(show, c)
@@ -17,7 +17,11 @@ function audit_docstrings(mod::Module, top::Module=mod, io::IO=stdout)
     end
     for name in names(mod)   # public names only
         obj = getglobal(mod, name)
+        Base.isdeprecated(mod, name) && continue
         if isa(obj, Function) || isa(obj, Type)
+            # Skip functions whose module-owned methods are all deprecated wrappers
+            module_methods = [m for m in methods(obj) if inmodule(m.module, top)]
+            !isempty(module_methods) && all(isdeprecated_method, module_methods) && continue
             println(io, "\n---")
             # Prefer binding-specific lookup so type aliases (e.g. Tile1 = Tile{T,1,N})
             # resolve to their own docstring rather than the base type's.
@@ -47,6 +51,7 @@ function audit_docstrings(mod::Module, top::Module=mod, io::IO=stdout)
                 # Now methods
                 for m in methods(obj)
                     inmodule(m.module, top) || continue
+                    isdeprecated_method(m) && continue
                     mdoc = Base.Docs._doc(obj, m.sig)
                     method_args = Tuple{Base.unwrap_unionall(m.sig).parameters[2:end]...}
                     if !(isa(mdoc, Base.Docs.DocStr) && method_args <: mdoc.data[:typesig])
@@ -81,6 +86,18 @@ function audit_docstrings(mod::Module, top::Module=mod, io::IO=stdout)
         end
     end
     println(io, "----- Done auditing module: $(mod)")
+end
+
+function isdeprecated_method(m::Method)
+    # @deprecate always stores the wrapper with this virtual filename
+    m.file === Symbol("deprecated.jl") && return true
+    # Fallback: scan lowered IR for a standalone GlobalRef to Base.depwarn
+    try
+        ci = Base.uncompressed_ast(m)
+        return any(s -> s isa GlobalRef && s.name === :depwarn, ci.code)
+    catch
+        return false
+    end
 end
 
 function inmodule(mod::Module, top::Module)

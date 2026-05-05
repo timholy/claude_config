@@ -147,6 +147,16 @@ export THE_ANSWER
 const THE_ANSWER = 42
 end # _WithConst
 
+
+# --- Deprecated symbol ---
+
+module _WithDeprecated
+export new_fn, old_fn
+"""New preferred function."""
+new_fn(x::Int) = x + 1
+@deprecate old_fn(x::Int) new_fn(x)
+end # _WithDeprecated
+
 end # _TestPkg
 
 # ---------------------------------------------------------------------------
@@ -234,6 +244,12 @@ using Test
         out = capture_audit(_TestPkg._WithConst)
         @test occursin("THE_ANSWER", out)
         @test occursin("Generic binding", out)
+    end
+
+    @testset "deprecated symbol is excluded" begin
+        out = capture_audit(_TestPkg._WithDeprecated)
+        @test !occursin("old_fn", out)
+        @test occursin("New preferred function", out)
     end
 
     @testset "output structure markers" begin

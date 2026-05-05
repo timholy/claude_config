@@ -19,3 +19,5 @@ telemetry/
 todos/
 src/Manifest.toml
 src/Manifest-v*.toml
+*.highwatermark
+*.lock

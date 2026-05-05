@@ -1,6 +1,7 @@
 module ClaudeUtils
 
 using JSON
+import REPL  # makes Base.Docs.doc available
 
 export audit_docstrings, search_project
 
