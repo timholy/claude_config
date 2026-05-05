@@ -6,6 +6,7 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 In addition to CLAUDE.md, a few skills are stored in `commands/`. Most of these skills focus on package maintenance, things like:
 
+- conceptual design of a package, coherence of API, etc (`/review-design`)
 - whole-package review for adherence to standard Julia style (`/review-api`)
 - docstring completeness, correctness, clarity, conciseness (`/freshen-docstrings`)
 - Adding Aqua (`/freshen-aqua`) and ExplicitImports (`/freshen-explicit-imports`) checks
