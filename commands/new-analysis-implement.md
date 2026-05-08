@@ -22,6 +22,7 @@ Read the following files before doing anything else:
 1. **`ANALYSIS_PLAN.md`** — the full plan. Identify:
    - The project maturity target (`script` / `package` / `releasable-package`)
    - The `Working stance` section (if present) — tiebreaker for ambiguous in-flight decisions
+   - The `Working knowledge` section — domain/data facts accumulated from earlier sessions; future chunks may depend on these
    - The package name and whether this extends an existing `dev`'d package
    - The next chunk with status `not-started` whose dependencies are all `complete`
    - Any open questions that might affect your work
@@ -175,6 +176,14 @@ After implementation, update `ANALYSIS_PLAN.md`:
    - YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY
    ```
    Detailed prose belongs in `ANALYSIS_SESSION.md` (Step 5), not here.
+6. **Working knowledge check**: did anything emerge in this chunk that future
+   chunks would reach a wrong conclusion without? Examples: a correction to a
+   prior misconception about how the data or ground truth was generated; a
+   non-obvious property of an upstream input; a domain fact that surprised you.
+   If yes, append a dated bullet to the plan's `Working knowledge` section
+   (`- YYYY-MM-DD (CHUNK-XXX): [fact + implication]`). The bar is "future
+   sessions need this to think correctly", not "interesting observation" —
+   chunk-local lessons stay in chunk Notes.
 
 ## Step 5: Write the Session Handoff
 

@@ -219,6 +219,13 @@ trivial).
 <!-- Optional. Tiebreaker for ambiguous implementer decisions. Omit the section if the user declined. -->
 [paragraph or bullets covering intended consumer, speed-vs-polish, off-piste tolerance]
 
+## Working knowledge
+<!-- Append-only. Domain or data facts that emerge during implementation and
+     that future chunks need to know. One bullet per fact, dated, with the
+     chunk where it surfaced. Do NOT use for chunk-local decisions (those go
+     in chunk Notes), unresolved questions (Open Questions), or one-shot
+     handoff items (ANALYSIS_SESSION.md). Starts empty. -->
+
 ## Chunks
 
 ### CHUNK-001: [chunk-name]

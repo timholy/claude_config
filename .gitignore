@@ -22,3 +22,4 @@ src/Manifest-v*.toml
 *.highwatermark
 *.lock
 settings.json
+.last-cleanup
