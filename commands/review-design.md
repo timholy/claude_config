@@ -121,6 +121,8 @@ implementer's tiebreaker for ambiguous decisions. The author may also push
 back on individual findings ("this is intentional, here's why") — those
 become `dropped` chunks.
 
+Also ask: **"Would you like to post this review to a GitHub issue? If so, provide the issue number."** If the user provides one, record it in the plan's Metadata as `- **Issue**: #NNN`; otherwise record `- **Issue**: n/a`. Commit messages written by the implementer should reference the issue number when one is set.
+
 Also, only if any acted-upon finding is likely to be breaking, ask about
 release strategy: cut a final non-breaking release before the first breaking
 change? Release between clusters or batch into a terminal breaking release?
@@ -164,6 +166,7 @@ inline in the description (a phrase, not a separate field).
 - **Package**: [name]
 - **Source review date**: [YYYY-MM-DD]
 - **Current version**: [from Project.toml]
+- **Issue**: #NNN | n/a
 
 ## Stated values
 [paragraph or bullets from the close-of-report]

@@ -112,6 +112,8 @@ covering:
 The reply lands verbatim in the plan's `Stated values` section as the
 implementer's tiebreaker.
 
+Also ask: **"Would you like to post this review to a GitHub issue? If so, provide the issue number."** If the user provides one, record it in the plan's Metadata as `- **Issue**: #NNN`; otherwise record `- **Issue**: n/a`. Commit messages written by the implementer should reference the issue number when one is set.
+
 Also, only if any approved item is Tier 1 (breaking), ask about release strategy:
 cut a final non-breaking release before the first breaking change? If multiple
 breaking clusters, release between them or batch into one terminal release?
@@ -156,6 +158,7 @@ separate field). Findings the user declined become chunks with
 - **Package**: [name]
 - **Source review date**: [YYYY-MM-DD]
 - **Current version**: [from Project.toml]
+- **Issue**: #NNN | n/a
 
 ## Stated values
 [paragraph or bullets from the close-of-report]

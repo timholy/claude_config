@@ -37,7 +37,8 @@ Chunks have a slim schema: `Kind`, `Description`, `Status`, `Notes` are always p
 
 If every chunk is `complete` or `dropped`, congratulate the user and suggest
 reviewing the session ledger plus the matching `_SESSION.md` files in git
-history for a summary.
+history for a summary. If the plan's Metadata contains an `Issue` entry that
+is not `n/a`, remind the user to close that issue.
 
 ## Step 2: Pick the next chunk(s)
 
