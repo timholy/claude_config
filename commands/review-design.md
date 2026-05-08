@@ -144,9 +144,21 @@ on. For each, classify as:
 - `dropped` — the author has chosen not to act on this finding. Record the
   reason briefly in the chunk's `Notes`.
 
-Group related findings into **clusters** (e.g., "type-hierarchy-cleanup",
-"composability-with-base") so the implementer can warn the author about
-half-modernized clusters.
+The default is one chunk per acted-upon finding, but **merge before splitting**
+when findings are small and conceptually unified — touching the same type, the
+same operation, or one coherent design move. Merging may pair a breaking
+change with its non-breaking deprecation shim into a single chunk; if `Stated
+values` indicates aggressive breaking-change tolerance, prefer this over
+shipping the shim and the new signature in separate PRs. A merged chunk takes
+the strictest flag of its constituents (`Breaking: yes` if any constituent is
+breaking). Aim for chunks worth a CI cycle and a focused review; trivial
+standalone chunks that force the user to wait on CI for a few-line change are
+an anti-pattern.
+
+Items that remain unmerged but are tightly related become a **cluster** (e.g.,
+"type-hierarchy-cleanup", "composability-with-base") so the implementer can
+warn the author about half-modernized clusters. Clusters may span breaking and
+non-breaking work; the breaking flag remains per-chunk.
 
 For each finding flagged as `Breaking`, mark the chunk accordingly so the
 implementer triggers the deprecation/version-bump machinery.

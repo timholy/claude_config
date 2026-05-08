@@ -99,7 +99,7 @@ List each finding with the same format.
 **Tier 3 — Internal consistency** (naming and ordering issues within the package, no direct Base analogy):
 List each finding.
 
-For each tier, note whether there are clusters of related changes (e.g., "all dimension arguments across 5 functions") that should be handled together to avoid a partially-modernized API.
+Note clusters of related changes (e.g., "all dimension arguments across 5 functions") that should be handled together to avoid a partially-modernized API. Clusters may span tiers — a Tier 1 signature change and the Tier 2 deprecation shim that supports it are part of the same cluster, not separate ones.
 
 Present the report to the user. **[pause for approval]** Wait for explicit confirmation of which tiers and specific items to address before writing the plan. Items the user does not select become individual `dropped` chunks (each with a one-line reason in `Notes`) so the plan reflects considered choices, not just acted-upon ones.
 
@@ -123,10 +123,23 @@ breaking clusters, release between them or batch into one terminal release?
 
 ## Phase 4 — Write the plan
 
-Convert the approved tiered findings into chunks. Each approved item becomes one
-chunk; tightly-related items in the same tier (e.g., "all dimension arguments
-across 5 functions") become a **cluster** of chunks sharing a `Cluster` label so
-the implementer can warn about half-modernized clusters.
+Convert the approved tiered findings into chunks. The default is one chunk per
+approved item, but **merge before splitting** when items are small and
+conceptually unified — same function, same keyword, or one coherent concept
+(e.g., "modernize `sort`'s configuration to keywords" covering `lt`, `by`, and
+`rev` together rather than three trivial chunks). Merging may cross tiers: if
+`Stated values` indicates aggressive breaking-change tolerance, prefer landing
+a Tier 1 signature change and its Tier 2 deprecation shim as one chunk rather
+than two separate PRs on the same surface. A merged chunk takes the strictest
+flag of its constituents (`Breaking: yes` if any constituent is breaking).
+Aim for chunks that are worth a CI cycle and a focused review; trivial
+standalone chunks that force the user to wait on CI for a few-line change are
+an anti-pattern.
+
+Items that remain unmerged but are tightly related (e.g., "all dimension
+arguments across 5 functions") become a **cluster** of chunks sharing a
+`Cluster` label so the implementer can warn about half-modernized clusters.
+Clusters may span tiers; the breaking flag remains per-chunk.
 
 Chunk kind mapping:
 
