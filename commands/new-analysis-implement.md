@@ -21,12 +21,18 @@ Read the following files before doing anything else:
 
 1. **`ANALYSIS_PLAN.md`** — the full plan. Identify:
    - The project maturity target (`script` / `package` / `releasable-package`)
+   - The `Working stance` section (if present) — tiebreaker for ambiguous in-flight decisions
    - The package name and whether this extends an existing `dev`'d package
    - The next chunk with status `not-started` whose dependencies are all `complete`
    - Any open questions that might affect your work
 2. **`ANALYSIS_SESSION.md`** (if it exists) — the previous session's handoff note.
    Read this to understand decisions made in prior sessions: naming conventions, data
    structures chosen, unexpected findings, known issues.
+
+Chunks have a slim schema: `Description`, `Status`, `Notes` are always present;
+`Inputs`, `Outputs`, `Depends on`, `Verification strategy` appear only when
+they carry information beyond `Description`. Treat absent fields as "see
+Description" / "none" / "implementer's choice".
 
 If `ANALYSIS_PLAN.md` does not exist, stop and tell the user to run `/new-analysis-plan` first.
 
@@ -164,11 +170,11 @@ After implementation, update `ANALYSIS_PLAN.md`:
 3. If you created new chunks (scope split or discovered work), add them with status
    `not-started` in the correct dependency order
 4. Add any new unresolved issues to `Open Questions`
-5. Append a one-paragraph entry to the `Session Log`:
+5. Append one line to the session ledger at the bottom of the plan:
    ```
-   **Session [date]**: Implemented CHUNK-XXX ([name]). [1–2 sentences on what was built
-   and any notable decisions.] Next up: CHUNK-XXX ([name]).
+   - YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY
    ```
+   Detailed prose belongs in `ANALYSIS_SESSION.md` (Step 5), not here.
 
 ## Step 5: Write the Session Handoff
 
@@ -206,38 +212,24 @@ CHUNK-XXX: [name]
 
 ## Step 6: Close the Session
 
-Tell the user:
+Tell the user, in this order:
 
-1. What was completed and what the verification showed
-2. Whether the full test suite passes (for package targets)
-3. A one-line preview of the next chunk
+1. One-line completion + verification summary (for `package` targets, include
+   whether the full test suite passes).
+2. One-line preview of the next chunk.
+3. Closing block (one short paragraph):
 
-Then explicitly invite the user to review the work before moving on. This is the ideal
-moment to do so: the code is fresh, you have full context, and changes are cheap. Say
-something like:
+   > Now is the best time to review and commit this chunk as a clean standalone
+   > unit (`git add -p && git commit`); I have full context to explain or revise
+   > while it's fresh. For the next chunk, run `/context` first — if you have
+   > headroom and the next chunk is small, continue here; otherwise `/clear` and
+   > re-run `/new-analysis-implement`.
 
-> **Now is the best time to review these changes.** I have complete context on every
-> decision made in this chunk and can explain, justify, or revise anything while it's
-> still fresh. Please look over the code (including any tests), ask any questions you
-> have, and suggest any improvements you'd like. We can iterate here before closing out.
+If you proposed an end-to-end command the user can run on real data, ask them
+to try it before committing — failures here often expose gaps the synthetic
+tests missed; diagnose, add a regression test (if reproducible without external
+data), then fix while context is still live.
 
-If you suggested a pipeline or end-to-end command the user can run on real data, explicitly
-ask them to try it now and report back before committing. If it errors, that is a signal
-that the tests missed something: diagnose the gap, add a regression test that would have
-caught the failure (if reproducible without external data), then fix the bug — all while
-this session's context is still live.
-
-Once the user is satisfied with the changes, prompt them to commit:
-
-> When you're happy with the changes, please commit them (e.g., `git add -p && git commit`
-> or via your preferred tool) so this chunk is captured as a clean, standalone unit of work.
-
-After the user has committed (or explicitly declined), issue the handoff prompt:
-
-> **Ready for the next session.** Please run `/clear` to reset the context window, then
-> run `/new-analysis-implement` again. The plan and session notes will orient the next
-> session without needing any context from this one.
-
-If the chunk was marked `blocked` instead of `complete`, explain the blocker clearly and
-suggest how the user might resolve it (manually, by revising the plan, or by asking for help)
-before the next session begins.
+If the chunk was marked `blocked` instead of `complete`, explain the blocker
+clearly and suggest how the user might resolve it (manually, by revising the
+plan, or by asking for help) before the next session begins.

@@ -22,6 +22,18 @@ Before decomposing, assess what the user has given you. A good plan requires:
 - **Language/environment**: What language and key libraries will be used?
 - **Known constraints**: Performance, reproducibility, deadlines, collaborators?
 
+Also ask the user (briefly, optional) for a **Working stance** — the
+implementer will read it as a tiebreaker for ambiguous in-flight decisions.
+Three prompts; one or two sentences total is plenty:
+
+- **Intended consumer**: just me / collaborators / paper-quality reproducibility / reusable lab tool. Calibrates testing and documentation rigor.
+- **Speed vs. polish**: leave TODOs and refactor later, or get each chunk right the first time?
+- **Off-piste tolerance**: when the implementer notices an adjacent finding or improvement, should it ignore, record in Open Questions (default), or pause and ask?
+
+If the user has no preferences, skip — the implementer will fall back on
+defaults. If they answer, transcribe the reply verbatim into the plan's
+`Working stance` field.
+
 If the user cannot describe the data format, do not block planning — instead,
 make CHUNK-001 a dedicated data reconnaissance chunk: open the files, describe
 what's there (shape, types, encoding, any obvious quality issues), and write
@@ -181,7 +193,12 @@ chunks are much easier to verify when you can run them on real data.
 
 Save the plan as `ANALYSIS_PLAN.md` in the project root (or a location the user specifies).
 
-Use exactly this schema so the implementer can parse it reliably:
+Use exactly this schema so the implementer can parse it reliably. The chunk
+schema is intentionally slim: `Description`, `Status`, and `Notes` are
+required. Add `Inputs`, `Outputs`, `Depends on`, and `Verification strategy`
+only when they carry information beyond what `Description` already conveys
+(for analysis projects, they often do — keep them when meaningful, omit when
+trivial).
 
 ```markdown
 # Analysis Plan
@@ -198,22 +215,28 @@ Use exactly this schema so the implementer can parse it reliably:
 - **Package name(s)**: [e.g. MyProject.jl — or "n/a" for script target]
 - **Extending existing package(s)**: [package name + local path, or "no"]
 
+## Working stance
+<!-- Optional. Tiebreaker for ambiguous implementer decisions. Omit the section if the user declined. -->
+[paragraph or bullets covering intended consumer, speed-vs-polish, off-piste tolerance]
+
 ## Chunks
 
 ### CHUNK-001: [chunk-name]
-- **Description**: [What this chunk does]
-- **Inputs**: [Files, data structures, or outputs from prior chunks]
-- **Outputs**: [Files, data structures, or return values]
-- **Depends on**: [CHUNK-XXX, or "none"]
-- **Verification strategy**: [Suggested approach — implementer may revise]
+- **Description**: [What this chunk does; include inputs/outputs inline if simple]
 - **Status**: `not-started`
 - **Notes**:
+
+# Add only when they carry information beyond Description:
+# - **Inputs**: [files, data structures, or outputs from prior chunks]
+# - **Outputs**: [files, data structures, or return values]
+# - **Depends on**: CHUNK-XXX, ...
+# - **Verification strategy**: [implementer may revise]
 
 ### CHUNK-002: [chunk-name]
 ...
 
-## Session Log
-<!-- The implementer appends an entry here after each session. -->
+## Session ledger
+<!-- The implementer appends one line after each session: `- YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY` -->
 
 ## Open Questions
 <!-- Unresolved ambiguities that may affect implementation. Implementer should surface blockers here. -->
