@@ -6,7 +6,7 @@ effort: high
 
 Review the Julia package in the current working directory for conceptual design issues. This is not a correctness check or a convention check — assume the code runs and follows modern Julia idioms. The question is whether the package's design is internally coherent: does it have a clear identity, a sensible type hierarchy, a consistent level of abstraction, and an API that composes naturally without exposing implementation accidents?
 
-This skill produces a structured report, then a values-clarification discussion, then a `DESIGN_REVIEW_PLAN.md` that decomposes the agreed-upon findings into chunks consumed by the companion `/review-implement` skill. Many findings will be questions for the author rather than clear recommendations, because the right answer often depends on design intent that only the author knows. Do not implement any changes in this skill — that is `/review-implement`'s job.
+This skill produces a structured report and then a `DESIGN_REVIEW_PLAN.md` that decomposes the agreed-upon findings into chunks consumed by the companion `/review-implement` skill. Many findings will be questions for the author rather than clear recommendations, because the right answer often depends on design intent that only the author knows. Do not implement any changes in this skill — that is `/review-implement`'s job.
 
 The package module name is determined from `Project.toml`.
 
@@ -106,50 +106,29 @@ Structure the report in three sections:
 
 End the report with a short paragraph characterizing the overall design: what works well, what the main tension is (if any), and what the one or two highest-leverage changes would be if the author wanted to address the findings.
 
-Present the report to the user and discuss. Do not propose specific code changes yet — Phase 5 captures the author's reaction, and Phase 6 turns the agreed-upon findings into an implementable plan.
+Present the report to the user and discuss. Do not propose specific code changes yet.
+
+Before writing the plan, ask the author for a short paragraph (or bullets)
+covering:
+
+- **Scope and audience** — who is this for, what is explicitly *out* of scope.
+- **Central abstraction** — is there one; what should the conceptual centerpiece be.
+- **Composability and Base** — how aggressively to participate in standard Julia interfaces; boundary with Base.
+- **Error and failure model** — throw vs. `nothing` vs. sentinel.
+
+The reply lands verbatim in the plan's `Stated values` section and is the
+implementer's tiebreaker for ambiguous decisions. The author may also push
+back on individual findings ("this is intentional, here's why") — those
+become `dropped` chunks.
+
+Also, only if any acted-upon finding is likely to be breaking, ask about
+release strategy: cut a final non-breaking release before the first breaking
+change? Release between clusters or batch into a terminal breaking release?
+`decide-later` is acceptable — the implementer will ask at the relevant moment.
 
 ---
 
-## Phase 5 — Values clarification
-
-A design review surfaces tensions; resolving them requires the author to
-articulate (or re-articulate) what the package is *for*. Before any plan is
-written, ask the author to answer briefly, in their own words:
-
-1. **Scope and audience**: who is this package for, and what is explicitly
-   *out* of scope? If the review surfaced a finding that suggests the scope
-   is unclear (e.g., utilities that look like a separate package), this is
-   the moment to settle it.
-2. **Central abstraction**: is there one? If the review identified the type
-   hierarchy as load-bearing or speculative, name what should be the
-   conceptual centerpiece going forward.
-3. **Composability and Base relationship**: how aggressively should the
-   package participate in standard Julia interfaces (iteration, indexing,
-   `==`/`hash`, `show`/`parse`)? What's the boundary with Base?
-4. **Error and failure model**: what should the consistent philosophy be
-   (throw vs. `nothing` vs. sentinel)?
-
-The author may push back on findings ("this is intentional, here's why").
-Record those responses — they may turn findings into `dropped` chunks rather
-than action items.
-
-The output of this phase is a short paragraph (or short bullet list) that
-will be transcribed verbatim into the plan's `Stated values` section. The
-implementer skill reads it every session as the tiebreaker for ambiguous
-decisions.
-
-Also ask, briefly:
-
-- **Release strategy** (only if any acted-upon finding is likely to be
-  breaking): do you want to cut a final non-breaking release before the
-  first breaking change lands? If multiple breaking clusters are likely,
-  do you want to release between clusters or batch into one terminal
-  breaking release? Acceptable answers include `decide-later`, in which
-  case the implementer will ask at the relevant moment.
-
----
-
-## Phase 6 — Write the plan
+## Phase 5 — Write the plan
 
 Walk the author through the report and ask which findings they want to act
 on. For each, classify as:
@@ -161,7 +140,7 @@ on. For each, classify as:
   change can be planned (e.g., "audit all callers of `foo`").
 - `implement` — the change is well-defined enough to code now.
 - `dropped` — the author has chosen not to act on this finding. Record the
-  reason briefly in the plan.
+  reason briefly in the chunk's `Notes`.
 
 Group related findings into **clusters** (e.g., "type-hierarchy-cleanup",
 "composability-with-base") so the implementer can warn the author about
@@ -171,7 +150,10 @@ For each finding flagged as `Breaking`, mark the chunk accordingly so the
 implementer triggers the deprecation/version-bump machinery.
 
 Write the plan to `DESIGN_REVIEW_PLAN.md` in the project root using this
-schema:
+schema. The chunk schema is intentionally slim: only `Kind`, `Description`,
+`Status`, and `Notes` are required. Add `Breaking: yes`, `Depends on: ...`,
+or `Cluster: ...` only when non-default. Reference the originating finding
+inline in the description (a phrase, not a separate field).
 
 ```markdown
 # Design Review Plan
@@ -184,16 +166,11 @@ schema:
 - **Current version**: [from Project.toml]
 
 ## Stated values
-[paragraph or bullets from Phase 5]
+[paragraph or bullets from the close-of-report]
 
 ## Release strategy
 - **Pre-breaking-release**: `yes` | `no` | `decide-later` | `n/a (no breaking changes planned)`
 - **Inter-cluster releases**: `yes` | `no` | `decide-later` | `n/a`
-
-## Baseline
-- Tests pass on the starting commit: `not-yet-checked`
-- `Test.detect_ambiguities` count: `not-yet-checked`
-- Working tree clean: `not-yet-checked`
 
 ## Decisions
 <!-- Answers to `decide` chunks land here, with the chunk ID. -->
@@ -202,30 +179,25 @@ schema:
 
 ### CHUNK-001: preflight
 - **Kind**: `preflight`
-- **Originating finding**: n/a
-- **Cluster**: none
-- **Breaking**: no
-- **Description**: Establish baseline (tests pass, ambiguity count, clean tree).
-- **Depends on**: none
-- **Verification**: full test suite, `Test.detect_ambiguities`
+- **Description**: Establish baseline — tests pass, `Test.detect_ambiguities` count, clean tree, current version. Record results in this chunk's Notes.
 - **Status**: `not-started`
 - **Notes**:
 
 ### CHUNK-002: [verb-phrase-name]
 - **Kind**: `decide` | `investigate` | `implement`
-- **Originating finding**: [section / quoted phrase from the review report]
-- **Cluster**: [label or "none"]
-- **Breaking**: yes | no
-- **Description**: [what the chunk does or asks]
-- **Depends on**: [CHUNK-XXX, ... or "none"]
-- **Verification**: [tests / ambiguity check / "n/a (decide)"]
+- **Description**: [what the chunk does or asks; reference the originating finding inline]
 - **Status**: `not-started`
 - **Notes**:
 
+# Add only when non-default:
+# - **Breaking**: yes
+# - **Depends on**: CHUNK-XXX, ...
+# - **Cluster**: [label]
+
 [... additional chunks ...]
 
-## Session Log
-<!-- The implementer appends an entry after each session. -->
+## Session ledger
+<!-- The implementer appends one line after each session: `- YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY` -->
 
 ## Open Questions
 ```

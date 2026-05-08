@@ -101,15 +101,21 @@ List each finding.
 
 For each tier, note whether there are clusters of related changes (e.g., "all dimension arguments across 5 functions") that should be handled together to avoid a partially-modernized API.
 
-Present the report to the user. **[pause for approval]** Wait for explicit confirmation of which tiers and specific items to address before writing the plan. Items the user does not select become `dropped` chunks (recorded with a brief reason) so the plan reflects considered choices, not just acted-upon ones.
+Present the report to the user. **[pause for approval]** Wait for explicit confirmation of which tiers and specific items to address before writing the plan. Items the user does not select become individual `dropped` chunks (each with a one-line reason in `Notes`) so the plan reflects considered choices, not just acted-upon ones.
 
-Before writing the plan, ask briefly:
+Before writing the plan, ask the user for a short paragraph (or bullets)
+covering:
 
-- **Modernization policy and breaking-change tolerance**: how aggressive should the modernization be? Is the package pre-1.0 (where breaking changes are cheap) or post-1.0 (where each breaking change is expensive)? Does the user prefer Tier 2 deprecation shims wherever possible, or a clean break? The answer goes into `Stated values`.
-- **Release strategy** (only if any approved item is Tier 1 / breaking):
-  - Cut a final non-breaking release before the first breaking change?
-  - If multiple breaking clusters, release between them or batch into one terminal breaking release?
-  Acceptable answers include `decide-later`; the implementer will ask at the relevant moment.
+- **Modernization aggressiveness and breaking-change tolerance** — pre-1.0 (breaking changes cheap) vs. post-1.0 (each one expensive); preference for Tier 2 deprecation shims vs. clean breaks.
+- **API surface preferences relative to Base** — how closely the package should mirror Base conventions when in tension with existing user code.
+
+The reply lands verbatim in the plan's `Stated values` section as the
+implementer's tiebreaker.
+
+Also, only if any approved item is Tier 1 (breaking), ask about release strategy:
+cut a final non-breaking release before the first breaking change? If multiple
+breaking clusters, release between them or batch into one terminal release?
+`decide-later` is acceptable — the implementer will ask at the relevant moment.
 
 ---
 
@@ -133,7 +139,13 @@ Chunk kind mapping:
 - **Items requiring upstream investigation** (e.g., "audit all call sites") →
   `investigate`.
 
-Write the plan to `API_REVIEW_PLAN.md` in the project root using this schema:
+Write the plan to `API_REVIEW_PLAN.md` in the project root using this schema.
+The chunk schema is intentionally slim: only `Kind`, `Description`, `Status`,
+and `Notes` are required. Add `Breaking: yes`, `Depends on: ...`, or
+`Cluster: ...` only when non-default. Reference the originating tier /
+convention / function name inline in the description (a phrase, not a
+separate field). Findings the user declined become chunks with
+`Status: dropped` and a one-line reason in `Notes`.
 
 ```markdown
 # API Review Plan
@@ -146,16 +158,11 @@ Write the plan to `API_REVIEW_PLAN.md` in the project root using this schema:
 - **Current version**: [from Project.toml]
 
 ## Stated values
-[modernization policy and breaking-change tolerance from the Phase 3 close-out]
+[paragraph or bullets from the close-of-report]
 
 ## Release strategy
 - **Pre-breaking-release**: `yes` | `no` | `decide-later` | `n/a (no breaking changes planned)`
 - **Inter-cluster releases**: `yes` | `no` | `decide-later` | `n/a`
-
-## Baseline
-- Tests pass on the starting commit: `not-yet-checked`
-- `Test.detect_ambiguities` count: `not-yet-checked`
-- Working tree clean: `not-yet-checked`
 
 ## Decisions
 <!-- Answers to `decide` chunks land here, with the chunk ID. -->
@@ -164,44 +171,33 @@ Write the plan to `API_REVIEW_PLAN.md` in the project root using this schema:
 
 ### CHUNK-001: preflight
 - **Kind**: `preflight`
-- **Originating finding**: n/a
-- **Cluster**: none
-- **Breaking**: no
-- **Description**: Establish baseline (tests pass, ambiguity count, clean tree).
-- **Depends on**: none
-- **Verification**: full test suite, `Test.detect_ambiguities`
+- **Description**: Establish baseline — tests pass, `Test.detect_ambiguities` count, clean tree, current version. Record results in this chunk's Notes.
 - **Status**: `not-started`
 - **Notes**:
 
 ### CHUNK-002: [verb-phrase-name]
 - **Kind**: `implement` | `decide` | `investigate`
-- **Originating finding**: [tier / convention / function name from the report]
-- **Cluster**: [label or "none"]
-- **Breaking**: yes | no
-- **Description**: [current signature → proposed signature, with rationale by analogy to Base]
-- **Depends on**: [CHUNK-XXX, ... or "none"]
-- **Verification**: tests for the new signature; deprecation-shim test if Breaking; ambiguity check
+- **Description**: [current signature → proposed signature, with rationale by analogy to Base; reference the originating tier/convention inline]
 - **Status**: `not-started`
 - **Notes**:
+
+# Add only when non-default:
+# - **Breaking**: yes
+# - **Depends on**: CHUNK-XXX, ...
+# - **Cluster**: [label]
 
 [... additional chunks ...]
 
 ### CHUNK-NNN: version-bump
 - **Kind**: `version-bump`
-- **Originating finding**: n/a
-- **Cluster**: none
 - **Breaking**: yes
-- **Description**: Bump version per breaking changes (0.x → minor; ≥1.x → major). Update CHANGELOG.
 - **Depends on**: [every Breaking: yes chunk, plus any release-breaking chunks]
-- **Verification**: full test suite green; no half-finished cluster
+- **Description**: Bump version per breaking changes (0.x → minor; ≥1.x → major). Update CHANGELOG.
 - **Status**: `not-started`
 - **Notes**:
 
-## Dropped findings
-<!-- Items the user chose not to act on, with one-line reasons. Preserved for institutional memory. -->
-
-## Session Log
-<!-- The implementer appends an entry after each session. -->
+## Session ledger
+<!-- The implementer appends one line after each session: `- YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY` -->
 
 ## Open Questions
 ```

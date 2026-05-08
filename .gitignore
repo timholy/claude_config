@@ -21,3 +21,4 @@ src/Manifest.toml
 src/Manifest-v*.toml
 *.highwatermark
 *.lock
+settings.json

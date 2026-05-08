@@ -28,13 +28,16 @@ Read, in order:
    - The `Stated values` section — this is the tiebreaker for ambiguous decisions.
    - The `Release strategy` section — pre-breaking release? inter-cluster releases?
    - Any answers already recorded in `Decisions`.
-   - Cluster status (which clusters still have chunks remaining).
    - The next chunk(s) with status `not-started` whose dependencies are all `complete`.
+   - Whether the current chunk belongs to a cluster with siblings still `not-started` — relevant when picking and when closing.
 2. The matching session handoff (`DESIGN_REVIEW_SESSION.md` or
    `API_REVIEW_SESSION.md`) if present — this is the previous session's note to you.
 
+Chunks have a slim schema: `Kind`, `Description`, `Status`, `Notes` are always present; `Breaking`, `Depends on`, and `Cluster` are present only when non-default. Treat absence of those optional fields as `no` / `none`.
+
 If every chunk is `complete` or `dropped`, congratulate the user and suggest
-reviewing the `Session Log` for a summary.
+reviewing the session ledger plus the matching `_SESSION.md` files in git
+history for a summary.
 
 ## Step 2: Pick the next chunk(s)
 
@@ -48,8 +51,9 @@ Default rule: **one chunk per session**. Two narrow exceptions:
    without `/clear` is fine. Otherwise prefer a clean break.
 
 Before doing any work, tell the user which chunk(s) you intend to take, what
-verification you plan, and any concerns. Pause briefly for redirection — do not
-demand explicit confirmation on routine chunks.
+verification you plan, and any concerns. If the chunk is part of a cluster,
+mention which cluster and how many siblings remain. Pause briefly for
+redirection — do not demand explicit confirmation on routine chunks.
 
 ## Step 3: Implement, by chunk kind
 
@@ -61,7 +65,7 @@ This is CHUNK-001 in every plan. It establishes the baseline before any change.
 - Run the full test suite via the MCP Julia session.
 - Run `Test.detect_ambiguities(MyPkg)` and record the count.
 - Note the current `Project.toml` version.
-- Fill the `Baseline` section of the plan. Mark the chunk `complete`. No commit.
+- Record clean-tree status, test result, ambiguity count, and starting commit/version directly in this chunk's `Notes`. Mark the chunk `complete`. No commit.
 
 ### Kind: `decide`
 
@@ -139,26 +143,23 @@ point.
 
 After implementation:
 
-1. Update the chunk's `Status` to `complete` (or `blocked` / `dropped` with a
-   one-line reason).
+1. Update `Status` to `complete` / `blocked` / `dropped` (one-line reason for the
+   latter two).
 2. Fill `Notes` with decisions, deviations, and anything the next session needs.
+   Detailed prose belongs in the SESSION handoff (Step 6), not here.
 3. Add any new chunks discovered during work in dependency order.
-4. Append one paragraph to `Session Log`:
+4. Append one line to the session ledger at the bottom of the plan:
 
-   > **Session YYYY-MM-DD**: Implemented CHUNK-XXX (name). [1–2 sentences on
-   > what was built and any notable decisions.] Next up: CHUNK-YYY (name).
+   > `- YYYY-MM-DD CHUNK-XXX (name) → next: CHUNK-YYY`
 
-5. **Cluster check**: if the chunk belongs to a cluster with remaining chunks,
-   note this in the close-of-session message. Half-modernized clusters are a
-   known failure mode.
-6. **Pre-breaking-release prompt** (only if `Release strategy` says
-   `decide-later`): if the next ready chunk is the first `Breaking: yes` chunk
-   in the plan, ask whether to cut a final non-breaking release first. If yes,
-   insert a `release-baseline` chunk before it and update `Release strategy`.
-7. **Inter-cluster release prompt** (only if `Release strategy` says
-   `decide-later`): if multiple breaking clusters remain, ask whether to release
-   between them or batch into one terminal breaking release. Insert
-   `release-breaking` chunks accordingly. Update `Release strategy`.
+5. **Pre-breaking-release prompt** (only if `Release strategy` is `decide-later`
+   and the next ready chunk is the first `Breaking: yes` chunk in the plan):
+   ask whether to cut a final non-breaking release first; if yes, insert a
+   `release-baseline` chunk before it and update `Release strategy`.
+6. **Inter-cluster release prompt** (only if `Release strategy` is `decide-later`
+   and multiple breaking clusters remain): ask whether to release between them
+   or batch into one terminal breaking release; insert `release-breaking`
+   chunks accordingly and update `Release strategy`.
 
 ## Step 6: Write the session handoff
 
@@ -197,35 +198,25 @@ CHUNK-XXX: [name] — [brief]
 
 Tell the user, in this order:
 
-1. What was completed and what verification showed.
-2. Cluster status, calling out any half-finished cluster explicitly.
-3. A one-line preview of the next chunk.
-4. **Review-now invitation**:
+1. One-line completion + verification summary. If a cluster has remaining
+   chunks, name it and how many remain (half-finished clusters are a known
+   failure mode).
+2. One-line preview of the next chunk.
+3. Closing block (one short paragraph):
 
-   > Now is the best time to review these changes. I have full context on every
-   > decision in this chunk and can explain or revise anything while it's fresh.
+   > Now is the best time to review and commit this chunk as a clean standalone
+   > unit (`git add -p && git commit`); I have full context to explain or revise
+   > while it's fresh. For the next chunk, run `/context` first — if you have
+   > headroom and the next chunk is small, continue here; otherwise `/clear` and
+   > re-run `/review-implement`.
 
-5. **Commit prompt** (if anything is staged):
-
-   > When you're satisfied, please commit this chunk as a clean standalone unit
-   > (e.g., `git add -p && git commit`).
-
-6. **PR nudge** (non-blocking; skip on `decide`/`investigate` chunks that
-   produced no commit):
-
-   > Consider opening a PR for this chunk now, or holding until the cluster is
-   > complete and submitting the cluster as one PR. Smaller PRs are easier to
-   > review than one bundled mega-PR, but use your judgment.
-
-7. **Continuation guidance**:
-
-   > To continue: run `/context` first. If you have plenty of room and the next
-   > chunk is small or closely related, you can run `/review-implement` again
-   > in this session. Otherwise `/clear` and re-run for a fresh context.
+If this chunk just *completed* a cluster, add a one-line PR nudge (consider
+opening a PR for the cluster now, or hold for a terminal bundle). Skip on
+`decide` / `investigate` chunks that produced no commit.
 
 If a `release-baseline` or `release-breaking` chunk just completed, also remind
 the user that registering the release on the Julia registry is a separate
-action from the commit/tag and confirm they have done so before moving on.
+action from the commit/tag.
 
 ## Important notes
 
