@@ -1,3 +1,12 @@
+# Text
+
+- use American spellings
+
+# Julia versions
+
+- `julia` uses the LTS (1.10)
+- `julia +1` uses the current release (currently 1.12)
+
 # Debugging Julia code
 
 - Exploit `Revise` to amortize the cost of compilation time, which for Julia is
@@ -19,7 +28,7 @@ For packages that require a display (e.g., Gtk, Qt, Makie), avoid repeated
 Fall back to `xvfb-run julia ...` via Bash only for final `Pkg.test()` runs or
 when the MCP session cannot be reconfigured.
 
-# Packages
+# Julia packages
 
 - Use the local `Project.toml` environment when available. Revise, TestEnv,
   Cthulhu, and some other developer-oriented tools are in my global (fallback)
@@ -37,7 +46,7 @@ when the MCP session cannot be reconfigured.
   searching the hard drive check the currently-active project's `Manifest.toml`
   for the path.
 
-# Style guide
+# Julia style guide
 
 - avoid being unnecessarily restrictive about method arguments. `f(A::Matrix{Float64})`
   silently excludes sparse matrices, GPU arrays, `Float32`, dual numbers, and anything
