@@ -44,6 +44,18 @@ For each type, provide:
 - **Kind**: `struct`, `abstract type`, `mutable struct`, `primitive type`, `Union`, `alias` (e.g., `const Foo = Bar{Int}`)
 - **Role**: choose the most accurate label(s): `data container`, `algorithm parameter`, `result type`, `trait`, `iterator`, `exception`, `enum-like`, `wrapper`, `abstract interface`, `internal implementation detail`
 - **Brief description**: one sentence on what it represents or holds
+- **Fields** (for `struct` / `mutable struct`): list each field name and its declared type, with `(file:line)` for the type definition.
+- **Constructors**: enumerate **every** callable form of the type itself — the implicit default constructor (if not suppressed by an inner constructor), every inner constructor, and every outer constructor (i.e., any method `T(...)` or `T{...}(...)` defined anywhere in the package, including in files other than the one declaring `T`). For each, give the full signature and `(file:line)`. If, after a thorough search across all source files, you find no callable form beyond Julia's implicit default, say so explicitly: **"Constructors: implicit default only — `T(field1::T1, field2::T2, ...)`"** or, if the type is abstract / has no usable constructor, **"Constructors: none found"**. Never silently omit this subsection — a downstream reviewer must be able to tell the difference between "no constructor exists" and "the agent didn't look".
+- **Base interface participation**: for every type, include this subsection. For each candidate method below, list either its signature with `(file:line)` or the literal token `not defined`. Candidates to check (do not skip any; mark `not defined` when absent):
+  - Equality / hashing: `Base.:(==)`, `Base.isequal`, `Base.hash`
+  - Display: `Base.show(::IO, ::T)`, `Base.show(::IO, ::MIME"text/plain", ::T)`, and any other `Base.show(::IO, ::MIME"...", ::T)` overloads (list each MIME explicitly)
+  - Copying: `Base.copy`, `Base.deepcopy_internal`
+  - Indexing / collection: `Base.getindex`, `Base.setindex!`, `Base.length`, `Base.size`, `Base.axes`, `Base.firstindex`, `Base.lastindex`, `Base.eltype`
+  - Iteration (always check for any type plausibly iterable, and **always** for any type whose role is `iterator`): `Base.iterate`, `Base.length`, `Base.eltype`, `Base.IteratorSize`, `Base.IteratorEltype`
+  - Conversion / promotion: `Base.convert(::Type{T}, ...)`, `Base.promote_rule`
+  - Broadcasting (when the type plausibly participates): `Base.BroadcastStyle`, `Base.broadcastable`
+  - Other `Base.*` or standard-interface methods specialized on the type (e.g., `Base.parent`, `Base.similar`, `Base.eachindex`, `Base.IndexStyle`)
+  Grep the package for `Base.<name>(` and `Base.<name>(::...T` patterns; do not rely on memory of which methods "ought" to exist. If a type has no `Base.*` specializations at all, write **"Base interface participation: none"** rather than omitting the subsection.
 
 Group types logically if there are natural clusters (e.g., "Solver types", "Result types", "Trait types"). If no natural grouping exists, list alphabetically.
 
@@ -53,6 +65,7 @@ Group types logically if there are natural clusters (e.g., "Solver types", "Resu
 - **Signature sketch**: name and the types of key arguments (use the actual type annotations from the source, not invented ones); include arity if overloaded
 - **Operation shape**: `construction`, `transformation`, `query/predicate`, `reduction`, `side effect`, `macro expansion`, `type conversion`, `iteration`, `display/IO`
 - **One-line description** of what it does
+- **Return type**: state the return type **only if** the source justifies a confident claim, and cite `(file:line)` for the justification — either an explicit return-type annotation (`function f(...)::T`), a `return` statement whose type is unambiguous from the local code (e.g., `return T(...)` where `T` is a concrete constructor, or `return [x for x in ...]` yielding a `Vector`), or a final expression of similarly unambiguous type. Quote or paraphrase the justifying line briefly. If the return type is not statically obvious, write: **"Return type: not statically obvious — last expression is `<paraphrase>` at (file:line)"**. Do **not** speculate or generalize from a function's name (e.g., do not claim `tiled_of` returns `Vector{Tile}` unless a specific source line forces that conclusion). Honest uncertainty is more useful to downstream reviewers than a confident guess.
 
 **Non-exported, non-`public` functions and macros** that meet ANY of these criteria:
 1. Demonstrated in docstrings, README, or docs/ (i.e., shown to users as part of the interface even if not formally exported)
@@ -70,7 +83,10 @@ Before finalizing your output, verify:
 - [ ] You have checked `ext/` for extension-defined exports or types added to public signatures
 - [ ] You have checked test files for namespace-qualified calls to non-exported functions
 - [ ] Every entry in the conceptual map has a role label and a one-line description
-- [ ] You have not included raw source code in your output
+- [ ] **Every type entry has an explicit Constructors subsection** — either enumerated callable forms with `(file:line)`, or an explicit "implicit default only" / "none found" statement. No type silently lacks this.
+- [ ] **Every type entry has an explicit Base interface participation subsection** — every candidate method from the list above is either given a signature with `(file:line)` or marked `not defined`. For types with role `iterator`, the iteration protocol methods (`iterate`, `length`, `eltype`, `IteratorSize`, `IteratorEltype`) are all addressed.
+- [ ] **Every asserted return type is backed by a `(file:line)` citation** of a return-type annotation or a representative `return`/final expression. Functions whose return type is not statically obvious are labeled as such rather than guessed.
+- [ ] You have not included raw source code in your output (short identifier-level quotations to justify a citation are fine; multi-line code blocks are not)
 
 If you find a type or function you are uncertain about (e.g., re-exported from a dependency, or a generated function), include it with a note: `[re-exported from Dep]` or `[generated]`.
 
