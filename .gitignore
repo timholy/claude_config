@@ -15,6 +15,7 @@ projects/
 session-env/
 sessions/
 shell-snapshots/
+tasks/
 telemetry/
 todos/
 src/Manifest.toml
