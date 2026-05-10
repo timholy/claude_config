@@ -1,6 +1,6 @@
 ---
 description: Review a Julia package's public API for consistency with modern Julia conventions and idioms
-model: Sonnet
+model: Opus
 effort: medium
 ---
 
