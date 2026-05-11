@@ -39,7 +39,11 @@ when the MCP session cannot be reconfigured.
 - When adding new pacakges to a local project, also update the `[compat]`
   section of `Project.toml` to bound the version of the new dependency. Where
   possible, choose lower bounds compatible with the LTS release of Julia
-  (currently 1.10).
+  (currently 1.10). After making edits to `Project.toml`, run `Pkg.resolve()`.
+  Resolver errors sometimes indicate package conflict; they can also occur upon
+  downgrading the Julia version. `Pkg.update()` can fix such errors. Julia
+  supports having multiple `Manifest-vX.Y.toml` files for different Julia
+  versions.
 
 - As needed, find the source for session-loaded packages with
   `Pkg.pkgdir(M::Module)`. For packages not loaded into the session, before
