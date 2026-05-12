@@ -211,6 +211,12 @@ Tell the user, in this order:
    > headroom and the next chunk is small, continue here; otherwise `/clear` and
    > re-run `/review-implement`.
 
+   If you draft the commit message, write it so a reader with only the repo (no
+   plan file) can understand it: describe the *change* and its *motivation*, not
+   its chunk ID or position in the plan. Do not reference `CHUNK-XXX`, "as
+   planned", or the plan filename — the plan may be gitignored or deleted once
+   complete.
+
 If this chunk just *completed* a cluster, add a one-line PR nudge (consider
 opening a PR for the cluster now, or hold for a terminal bundle). Skip on
 `decide` / `investigate` chunks that produced no commit.
@@ -221,6 +227,11 @@ action from the commit/tag.
 
 ## Important notes
 
+- Commit messages must stand alone. The plan file is a working document for
+  this session; it may not be part of the repo. Never cite `CHUNK-XXX`
+  identifiers, "resolves CHUNK-NNN", or the plan filename in commit messages,
+  PR descriptions, or code comments. Translate plan-internal references into a
+  self-contained description of what changed and why.
 - Do not invent new chunks unless the work demands it; trust the plan.
 - If `Stated values` would justify a different choice than the originating
   finding suggested, follow `Stated values` and record the divergence in

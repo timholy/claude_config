@@ -234,6 +234,12 @@ Tell the user, in this order:
    > headroom and the next chunk is small, continue here; otherwise `/clear` and
    > re-run `/new-analysis-implement`.
 
+   If you draft the commit message, write it so a reader with only the repo (no
+   plan file) can understand it: describe the *change* and its *motivation*, not
+   its chunk ID or position in the plan. Do not reference `CHUNK-XXX`, "as
+   planned", or the plan filename — the plan may be gitignored or deleted once
+   complete.
+
 If you proposed an end-to-end command the user can run on real data, ask them
 to try it before committing — failures here often expose gaps the synthetic
 tests missed; diagnose, add a regression test (if reproducible without external
@@ -242,3 +248,11 @@ data), then fix while context is still live.
 If the chunk was marked `blocked` instead of `complete`, explain the blocker
 clearly and suggest how the user might resolve it (manually, by revising the
 plan, or by asking for help) before the next session begins.
+
+## Important notes
+
+- Commit messages must stand alone. `ANALYSIS_PLAN.md` is a working document
+  for this session; it may not be part of the repo. Never cite `CHUNK-XXX`
+  identifiers, "resolves CHUNK-NNN", or the plan filename in commit messages,
+  PR descriptions, or code comments. Translate plan-internal references into a
+  self-contained description of what changed and why.
