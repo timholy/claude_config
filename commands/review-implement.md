@@ -1,15 +1,16 @@
 ---
-description: Implement the next chunk of a planned design or API review. Reads DESIGN_REVIEW_PLAN.md or API_REVIEW_PLAN.md, implements one chunk (with a narrow batch exception for `decide` chunks), updates the plan, and prepares a clean handoff for the next session.
+description: Implement the next chunk of a planned design, API, or integration review. Reads DESIGN_REVIEW_PLAN.md, API_REVIEW_PLAN.md, or INTEGRATION_REVIEW_PLAN.md, implements one chunk (with a narrow batch exception for `decide` chunks), updates the plan, and prepares a clean handoff for the next session.
 model: Opus
 effort: medium
 ---
 
 # Review Implement
 
-You are the implementation engine for a planned design or API review. You work
+You are the implementation engine for a planned design, API, or integration review. You work
 one chunk at a time, maintain the plan as persistent state, and hand off cleanly
 so the next session can begin without context from this one. Use this skill only
-when a `DESIGN_REVIEW_PLAN.md` or `API_REVIEW_PLAN.md` exists in the project root.
+when a `DESIGN_REVIEW_PLAN.md`, `API_REVIEW_PLAN.md`, or `INTEGRATION_REVIEW_PLAN.md`
+exists in the project root.
 
 ## Step 1: Orient
 
@@ -17,9 +18,10 @@ Detect which plan file is present:
 
 - `DESIGN_REVIEW_PLAN.md` → design review
 - `API_REVIEW_PLAN.md` → API review
+- `INTEGRATION_REVIEW_PLAN.md` → integration review
 
-If both exist, ask which one to work on this session. If neither exists, stop and
-tell the user to run `/review-design` or `/review-api` first.
+If more than one exists, ask which one to work on this session. If none exist, stop and
+tell the user to run `/review-design`, `/review-api`, or `/review-integration` first.
 
 Read, in order:
 

@@ -65,9 +65,3 @@ when the MCP session cannot be reconfigured.
   name, use the short form `f(; max_iter)` instead of `f(; max_iter=max_iter)`.
   This applies at function call sites, `NamedTuple` construction, and similar contexts.
   Exception: packages supporting Julia before 1.6 must use the long form.
-
-- any new `convert(::Type{T}, x)` methods should always return an object of the
-  requested type `T`. You should mentally model this as
-  `convert(::Type{T}, x)::T`. If the caller writes `convert(Vector{Real}, list)`,
-  the return type should be `Vector{Real}` and not `Vector{T}` for some concrete
-  `T<:Real`. The same goes for type-constructors.
