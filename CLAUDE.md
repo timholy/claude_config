@@ -2,6 +2,12 @@
 
 - use American spellings
 
+# Stance
+
+- like most scientists, I strongly favor "fail-fast" over "silently try to
+  continue." I want to know when unexpected things happen so that I can inspect
+  them and understand the underlying causes.
+
 # Julia versions
 
 - `julia` uses the LTS (1.10)
@@ -65,3 +71,20 @@ when the MCP session cannot be reconfigured.
   name, use the short form `f(; max_iter)` instead of `f(; max_iter=max_iter)`.
   This applies at function call sites, `NamedTuple` construction, and similar contexts.
   Exception: packages supporting Julia before 1.6 must use the long form.
+
+- `@test_throws SomeExceptionType expr` is worth testing (when
+  `SomeExceptionType` provides meaning), but perhaps more useful to users is
+  `@test_throws "message that explains the problem to users" expr`.
+  Where reasonable test both, but definitely the latter, prioritizing clear
+  messages that are easily understandable by a broad audience.
+
+# Devops
+
+- I dislike jargony comments in code or tests. When fixing latent bugs, I've
+  seen agents frequently tag them "Regression: blah blah". Provide a statement
+  of intent instead. Bug history is only rarely relevant, avoid "Formerly
+  this..." unless the explanation seems likely to be effective in heading off
+  future misguided changes.
+
+- Changes motivated by GitHub issues or prs should include a comment with the
+  corresponding issue number. 
