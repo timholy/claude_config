@@ -31,13 +31,22 @@ Aqua.test_all(<PackageModule>)
 
 where `<PackageModule>` is the name of the package defined in this repository.
 
+Run this on Julia versions that include the user's default version and any
+others tested on CI. Supported versions can be determined from `Project.toml`
+and the relevant GitHub workflow (if present). Several `Aqua.test_all` checks —
+notably `test_ambiguities` and `test_unbound_args` — depend on method tables and
+ambiguity resolution that change across Julia versions, so a check can pass on
+one version and fail on another. Neither version is uniformly stricter.
+
 ## 3. Report and fix
 
 Summarize the results for the user. Propose fixes for any failures. Wait for user approval before making changes.
 
-## 4. Add to test suite
+## 4. Add to test suite and verify
 
 Once all Aqua checks pass, add `Aqua.test_all(<PackageModule>)` to the test suite (inside the main `@testset` block) to prevent regressions.
+
+Then run the full test suite and confirm it passes on both the lowest supported Julia version and the current release (see Step 2). Do not finish this step with a red suite on any supported version: if `Aqua.test_all` fails, return to Step 3.
 
 ## 5. Add Aqua badge to README
 
