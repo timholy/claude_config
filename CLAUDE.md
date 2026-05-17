@@ -67,16 +67,31 @@ when the MCP session cannot be reconfigured.
   not; leave unannotated when the method works for any input. Annotate to control
   dispatch and resolve ambiguities, not to document intent.
 
+- the same caution applies to parametric `struct` constructors. Write the inner
+  constructor with *unconstrained* value arguments — `MyStruct{A,B}(a, b) where {A,B}`,
+  not `(a::A, b::B)` — and let the field declarations and `new` do the
+  coercion; constraining the arguments breaks calls like `MyStruct{Float64}(1, 0)`.
+  Outer constructors should only compute type parameters and delegate inward,
+  forming a cascade `MyStruct(args...)` → `MyStruct{A}(args...)` →
+  `MyStruct{A,B}(args...)` so every call form coerces identically. Some
+  `struct`s have trailing type-parameters that are primarily internal,
+  conferring inferrability but not usually manipulated by users; the cascade should
+  leap over these by calling the inner constructor directly,
+  `MyStruct{A,B}(args...)` → `MyStruct{A,B,typeof(c),typeof(d)}(args...)`, where
+  `c` and `d` have already been `convert`ed to types consistent with `A` and
+  `B`, e.g., `c = convert(AbstractArray{A}, c)::AbstractArray{A}` given
+  `C<:AbstractArray{A}`.
+
 - avoid redundant keyword syntax: when a variable name matches the keyword argument
   name, use the short form `f(; max_iter)` instead of `f(; max_iter=max_iter)`.
   This applies at function call sites, `NamedTuple` construction, and similar contexts.
   Exception: packages supporting Julia before 1.6 must use the long form.
 
-- `@test_throws SomeExceptionType expr` is worth testing (when
-  `SomeExceptionType` provides meaning), but perhaps more useful to users is
-  `@test_throws "message that explains the problem to users" expr`.
-  Where reasonable test both, but definitely the latter, prioritizing clear
-  messages that are easily understandable by a broad audience.
+- `@test_throws SomeExceptionType expr` may be worth testing when
+  `SomeExceptionType` provides meaning, but
+  `@test_throws "message that clearly explains the problem to users" expr` is
+  typically the more relevant target for testing. There are cases where it may
+  be reasonable test both.
 
 # Devops
 
