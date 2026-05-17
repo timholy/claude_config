@@ -24,3 +24,4 @@ src/Manifest-v*.toml
 *.lock
 settings.json
 .last-cleanup
+rules/private.md
