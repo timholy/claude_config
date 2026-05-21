@@ -11,6 +11,10 @@ In addition to CLAUDE.md, a few skills are stored in `commands/`. Most of these 
 - docstring completeness, correctness, clarity, conciseness (`/freshen-docstrings`)
 - Adding Aqua (`/freshen-aqua`) and ExplicitImports (`/freshen-explicit-imports`) checks
 
+Some skills are workflows rather than maintenance tasks:
+
+- headless Julia performance profiling — CPU hot spots, dispatch, GC, allocations, type instabilities (`/profile-performance`)
+
 Most of these skills have been tweaked to enhance context-window efficiency; `freshen-docstrings` is a good example, where we extract as much as possible from the running Julia session without reading all the package source. Despite these tweaks, some (like `review-api`) will still burn through a lot of credits.
 
 As of the time of this writing (late April 2026), this repo is still under heavy development.
