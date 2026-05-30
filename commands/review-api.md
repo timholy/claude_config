@@ -115,6 +115,26 @@ Note clusters of related changes (e.g., "all dimension arguments across 5 functi
 
 Present the report to the user. **[pause for approval]** Wait for explicit confirmation of which tiers and specific items to address before writing the plan. Items the user does not select become individual `dropped` chunks (each with a one-line reason in `Notes`) so the plan reflects considered choices, not just acted-upon ones.
 
+### Prior-review carry-over
+
+Before the interview below, check the project root for sibling plan files:
+`DESIGN_REVIEW_PLAN.md`, `API_REVIEW_PLAN.md`, `INTEGRATION_REVIEW_PLAN.md`
+(skipping this skill's own output). For each that exists, read its `Stated
+values`, `Release strategy`, `Decisions`, and `Issue` metadata.
+
+When asking the questions below, present prior answers and ask only for
+deltas — do not re-pose questions the user has already answered in a
+sibling plan unless the framing genuinely differs. In particular:
+
+- If a sibling `Release strategy` is recorded, default to the same answer and
+  confirm in one line rather than re-interviewing.
+- If `Stated values` from a sibling plan covers the same ground (e.g.,
+  breaking-change tolerance), quote it back and ask "still applies?" rather
+  than asking fresh.
+- If an `Issue` number is recorded, ask whether to reuse it or open a new one.
+
+Record carried-over answers verbatim. Do not paraphrase.
+
 Before writing the plan, ask the user for a short paragraph (or bullets)
 covering:
 
