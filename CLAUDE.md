@@ -42,7 +42,7 @@ when the MCP session cannot be reconfigured.
 
 - Do not bias decisions about packages based on what is already installed.
 
-- When adding new pacakges to a local project, also update the `[compat]`
+- When adding new packages to a local project, also update the `[compat]`
   section of `Project.toml` to bound the version of the new dependency. Where
   possible, choose lower bounds compatible with the LTS release of Julia
   (currently 1.10). After making edits to `Project.toml`, run `Pkg.resolve()`.
@@ -101,5 +101,14 @@ when the MCP session cannot be reconfigured.
   this..." unless the explanation seems likely to be effective in heading off
   future misguided changes.
 
+- Commit subject lines should ideally be shorter than lines in the body (aim for
+  <=50, up to 72 OK) due to formatting on GitHub.
+
 - Changes motivated by GitHub issues or prs should include a comment with the
-  corresponding issue number. 
+  corresponding issue number. Do not put the issue number in the subject line,
+  as that can be confusing in conjunction with a merge-squash that inserts the
+  PR# in the subject. If the commit fixes an issue, do put "Fixes #xyz" or
+  similar in the body of the commit message; that will trigger GitHub to
+  auto-close the issue. If a commit closes multiple issues, you cannot provide
+  ranges or comma-separated lists of numbers; use "Fixes #abc; fixes #def; ..."
+  
