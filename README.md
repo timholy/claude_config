@@ -37,7 +37,7 @@ Focused maintenance tools:
 - `/update-compat`: used when a dependency releases a new breaking version
 - `/freshen-docstrings`: polish the "docstrings" for methods, types, and constants in a package
 - `/freshen-docs`: polish the README and/or [Documenter](https://documenter.juliadocs.org/stable/) documentation
-- `/freshen-coverage`: improve the test-coverage of the package
+- `/freshen-coverage`: improve [test-coverage](https://en.wikipedia.org/wiki/Code_coverage)
 - `/freshen-aqua`: add [Aqua](https://github.com/JuliaTesting/Aqua.jl) tests to a package (enforce certain mechanical aspects of "engineering quality")
 - `/freshen-explicit-imports`: add [ExplicitImports](https://github.com/JuliaTesting/ExplicitImports.jl) as a test-dependency (more "engineering quality")
 - `/freshen-runic`: use [Runic](https://github.com/fredrikekre/Runic.jl) for auto-formatting
