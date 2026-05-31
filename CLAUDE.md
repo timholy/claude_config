@@ -115,6 +115,10 @@ figures on the monitor.
 
 # Devops
 
+- Do not post comments on GitHub without getting my approval for the exact text.
+  GitHub is also a social media environment and I do not want you representing
+  me without consent.
+
 - I dislike jargony comments in code or tests. When fixing latent bugs, I've
   seen agents frequently tag them "Regression: blah blah". Provide a statement
   of intent instead. Bug history is only rarely relevant, avoid "Formerly
