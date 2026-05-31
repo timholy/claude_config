@@ -8,9 +8,9 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 - **CLAUDE.md**: general instructions applicable in every session. Includes stance, programming language and style choices, MCP-agent debugging tips, and devops tips (commits, GitHub etiquette). If you use this, customize it extensively to your own preferences.
 
-- a collection of [skills](https://claude.com/docs/skills/overview) in `commands/`
+- a collection of [skills](https://claude.com/docs/skills/overview) in [commands/](commands)
 
-- a few code fragments in `julia-code`/and [subagents](https://code.claude.com/docs/en/sub-agents) that harvest data used by the main agent
+- a few code fragments in [julia-code/](julia-code) and [subagents](https://code.claude.com/docs/en/sub-agents) (in [agents](agents)) that harvest data used by the main agent
 
 ### Skills/commands
 
