@@ -23,6 +23,11 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 These are targeted at Julia package development; if you're not a Julia user, they are either of no value or should only be used as inspiration.
 
+Required packages (installed in your *global* environment):
+- [Revise](https://github.com/timholy/Revise.jl)
+- [TestEnv](https://github.com/JuliaTesting/TestEnv.jl)
+- [BenchmarkTools](https://github.com/JuliaCI/BenchmarkTools.jl) and [Flamegraphs](https://github.com/timholy/FlameGraphs.jl) if you use the `/profile-performance` skill
+
 Interactive tools:
 
 - `/profile-performance`: teach an agent in the running session the finer points of performance analysis
