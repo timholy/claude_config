@@ -106,7 +106,12 @@ Consult the plan's `Target Outputs` section. If the current chunk is meant to
 produce a specified output, build it to that contract. If the project is
 exploratory, prefer building **composable visualization primitives** — reusable
 functions that extract and render one meaningful unit — over one-off scripts, so
-later requests can be assembled cheaply.
+later requests can be assembled cheaply. Where possible, cleanly separate the
+three key concerns: *what* is plotted (translating data into plot components),
+*how* it is plotted (styling decisions), and *where* it appears (figure layout).
+Keep the primitive ignorant of the figure: have it draw into a target the caller
+supplies (or return a composable object), rather than manufacturing its own, so
+the same primitive serves both a quick diagnostic and a multi-panel layout.
 
 Distinguish durable from ephemeral:
 - **Durable** outputs (a figure the user will keep, a reproducible script) belong
