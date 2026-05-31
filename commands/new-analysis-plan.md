@@ -74,7 +74,57 @@ a chunk's functionality seems generically useful beyond this project, consider
 whether it warrants its own package. Future steps should take this possibility
 into account.
 
-## Step 3: Package Scaffolding Guidance
+## Step 3: Establish Target Outputs
+
+Before decomposing the project into chunks, ask the user about the project's
+intermediate and final outputs: the figures, tables, interactive views, or
+methods descriptions that — alongside the code — give the user a realistic
+assessment of the project's current state and any results obtained. These
+outputs are also the project's primary tool for **maintaining human-agent
+alignment**: a shared, high-bandwidth view of the data and results lets the human
+partner (whether or not they read code) catch problems and redirect the analysis
+early, before effort compounds in the wrong direction.
+
+How concretely you can specify outputs depends on how predictable the project
+is, and a single project is often predictable early (load, clean, QC plots) and
+exploratory later — so a plan frequently needs both of the modes below.
+
+- **Predictable parts** — treat the output as a *contract*: "Figure 3, panels
+  A–C, showing X vs Y for each condition." Specify it explicitly; it can become
+  one or more output chunks with a clear definition of done.
+
+- **Exploratory parts** — the final figure cannot be named in advance, so plan
+  for *visualization infrastructure* rather than specific outputs. The key
+  planning question is: **what are the atomic units of the project that are
+  likely to be combined to produce a flexible set of visualizations under
+  mid-flight user guidance?** Enumerate those composable primitives (e.g. "a
+  function to extract one trial's trace", "a function to overlay a model fit on
+  raw data") so the implementer builds them as reusable utilities rather than
+  one-off scripts. With the primitives in place, the agent can assemble a
+  specific view on request cheaply.
+
+Visualization is the usual channel, but not the only one: any high-bandwidth
+human sense that can trigger an "aha" is fair game. Audio output is rarely
+needed, but a few projects (e.g. analyzing birdsong) genuinely benefit from
+being able to *listen* to the data, not just look at it. A "methods section"
+documenting key design choices is another valuable durable output; this can be
+produced by the user via the `/write-methods` skill rather than planned as a
+chunk here.
+
+Analysis projects routinely yield intermediate results that live only in the
+interactive session (REPL/notebook). This is an expected part of efficient
+discovery, but **a result has zero value if it is never surfaced to the user in
+durable form**. Most commonly, the useful subset of exploratory work is captured
+into concise, well-organized code and scripts so it can be reproduced from
+scratch. Conversely, beware of **too many durable outputs**: a folder of
+hundreds of figure-producing scripts is unmanageable. Distinguish outputs with
+durable value from those needed only for debugging or a single decision — the
+latter can live in the interactive session and be flushed when it exits.
+
+Record the result of this discussion in the plan's `## Target Outputs` section
+(see the schema in Step 7) so it survives into implementation.
+
+## Step 4: Package Scaffolding Guidance
 
 When the maturity target is `package` or `releasable-package`, include an explicit
 `scaffold-package` chunk before any analysis logic is written. Record the expected
@@ -140,7 +190,7 @@ The key principle across all languages: **analysis logic lives in the package (`
 equivalent), analysis scripts live outside it (`scripts/`)**. Scripts are thin — they
 import the package, call functions, and produce outputs. They are not where the work lives.
 
-## Step 4: Decompose into Chunks
+## Step 5: Decompose into Chunks
 
 A chunk is a **single function, module, or self-contained capability** with:
 - Clear inputs and outputs
@@ -175,21 +225,37 @@ pass on a clean machine with no access to the project's data files or analysis o
 Use synthetic fixtures with known ground-truth answers; validate on real data during
 development, but record that in session notes rather than the test suite.
 
-## Step 5: Order the Chunks
+**Human-agent alignment:** Particularly for exploratory projects, consider each
+substantial chunk from the standpoint of keeping partners with different
+strengths in sync. Trivial chunks ("download the dataset") need no such
+treatment. But for analysis chunks, ask which of the visualization primitives
+from `Target Outputs` this chunk should produce or feed, and whether the chunk
+warrants a transparency view of its own. When the purpose is transparency rather
+than a durable deliverable, prefer producing the view live from the interactive
+session over committing yet another script.
+
+## Step 6: Order the Chunks
 
 Produce a dependency-ordered list. The typical order for a `package`-target project is:
 
 1. Data reconnaissance (if format is unknown)
 2. Package scaffolding
 3. Data loading / parsing
-4. Core logic chunks (in dependency order)
-5. Visualization / output chunks
-6. Orchestration / end-to-end script
+4. Visualization infrastructure (for exploratory projects — see below)
+5. Core logic chunks (in dependency order)
+6. Final visualization / output chunks
+7. Orchestration / end-to-end script
 
 Where the ordering is ambiguous, prefer getting data loading done early — downstream
 chunks are much easier to verify when you can run them on real data.
 
-## Step 6: Write the Plan File
+For exploratory projects, also pull *visualization infrastructure* forward: the
+composable primitives identified in `Target Outputs` exist precisely to support
+steering during the messy middle, so they should land soon after data loading,
+well before the final output chunks. Specified, contract-style output figures
+can stay late.
+
+## Step 7: Write the Plan File
 
 Save the plan as `ANALYSIS_PLAN.md` in the project root (or a location the user specifies).
 
@@ -218,6 +284,16 @@ trivial).
 ## Working stance
 <!-- Optional. Tiebreaker for ambiguous implementer decisions. Omit the section if the user declined. -->
 [paragraph or bullets covering intended consumer, speed-vs-polish, off-piste tolerance]
+
+## Target Outputs
+<!-- What the project surfaces to the user, and how — its main human-agent alignment tool.
+     Predictable parts: explicit specs (figure + panels, table columns) that become output chunks.
+     Exploratory parts: the atomic visualization primitives that compose into flexible views
+     under mid-flight guidance. A single plan may carry both.
+     Distinguish durable outputs (committed scripts/figures) from ephemeral diagnostics
+     (produced live from the interactive session, flushed on exit). Note any non-visual
+     channel (e.g. audio) if relevant. -->
+[predictable output specs, and/or the inventory of composable visualization primitives]
 
 ## Working knowledge
 <!-- Append-only. Domain or data facts that emerge during implementation and
@@ -249,7 +325,7 @@ trivial).
 <!-- Unresolved ambiguities that may affect implementation. Implementer should surface blockers here. -->
 ```
 
-## Step 7: Brief the User
+## Step 8: Brief the User
 
 After writing the file, tell the user:
 

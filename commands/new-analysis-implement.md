@@ -23,6 +23,7 @@ Read the following files before doing anything else:
    - The project maturity target (`script` / `package` / `releasable-package`)
    - The `Working stance` section (if present) — tiebreaker for ambiguous in-flight decisions
    - The `Working knowledge` section — domain/data facts accumulated from earlier sessions; future chunks may depend on these
+   - The `Target Outputs` section — the figures/views the project should surface and the visualization primitives it relies on; the current chunk may need to produce or feed one of these
    - The package name and whether this extends an existing `dev`'d package
    - The next chunk with status `not-started` whose dependencies are all `complete`
    - Any open questions that might affect your work
@@ -98,6 +99,26 @@ plan and apply the corresponding behavior throughout.
   convention (Julia: `"""..."""` above the function; Python: NumPy or Google style;
   R: roxygen2; MATLAB: leading comment block)
 - Do not add dependencies not already in the environment without flagging it to the user
+
+### Visualization and alignment outputs
+
+Consult the plan's `Target Outputs` section. If the current chunk is meant to
+produce a specified output, build it to that contract. If the project is
+exploratory, prefer building **composable visualization primitives** — reusable
+functions that extract and render one meaningful unit — over one-off scripts, so
+later requests can be assembled cheaply.
+
+Distinguish durable from ephemeral:
+- **Durable** outputs (a figure the user will keep, a reproducible script) belong
+  in `scripts/` for `package` targets and should be committed.
+- **Ephemeral** diagnostics — a quick view to confirm a step worked or to inform
+  a single decision — can be produced live from the interactive session
+  (REPL/notebook) and left to flush when it exits. Do not accumulate a clutter of
+  near-duplicate figure scripts.
+
+When a chunk produces something visual or auditory, proactively offer to show or
+play it for the user — surfacing it is what keeps the two of you aligned. A
+result that stays unseen in the session has no value.
 
 ### Verification (moderate stance)
 
