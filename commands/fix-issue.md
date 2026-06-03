@@ -72,15 +72,25 @@ triaging the tracker:
 Full duplicate-hunting and tracker cleanup are a separate task; do not expand
 into them here.
 
-Then create a fresh branch off the **up-to-date** default branch:
+Then create a fresh branch off the **up-to-date** default branch. Do this
+**before** committing anything — never commit on the default branch and branch
+afterward, as that lands the work on the default branch and leaves the new
+branch with no commits relative to it (the push/PR then fails with "No commits
+between … and …"). Compute the default branch name rather than hardcoding it,
+and confirm the switch actually happened:
 
 ```bash
 git fetch origin
-git switch -c teh/fixXYZ origin/<default-branch>   # or the branch name the user gave
+default=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
+git switch -c teh/fixXYZ "origin/$default"   # or the branch name the user gave
+git branch --show-current                     # must print teh/fixXYZ, NOT $default
 ```
 
 `teh` = user initials, `XYZ` = issue number; the user may instead supply a
-branch name at invocation.
+branch name at invocation. If `git switch -c` fails for any reason (e.g. a
+naming clash), stop and resolve it — do **not** continue on the default branch.
+Any uncommitted edits already made while reproducing are carried onto the new
+branch by the switch.
 
 ### 4a. Fix the bug
 
@@ -104,6 +114,11 @@ branch name at invocation.
 
 ### Commit (4a and 4b)
 
+- **Guard first:** confirm you are on the issue branch, not the default branch.
+  If `git branch --show-current` returns `main`/`master` (or whatever the
+  default is), branching was skipped or failed — stop and create the branch
+  (which carries your working changes with it) before committing. Never run
+  `git commit` while on the default branch.
 - Commit locally. **Do not push** until the user has reviewed the change and the
   commit message.
 - Subject ≤ 50 chars (72 max), no issue number. Put `Fixes #XYZ` in the body so
