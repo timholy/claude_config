@@ -11,9 +11,17 @@ the issue is a bug. Reproduce first, decide second, act third.
 
 ## 1. Gather context
 
-- Read the issue thread: `gh issue view XYZ --comments` (resolve a link to its
-  number). Note the Julia version, package version, and OS the reporter used,
-  plus any stack trace or reproducer they provided.
+- Read the full issue thread in one structured call (resolve a link to its
+  number first). `gh issue view XYZ --comments` renders for humans but can fold
+  or truncate the body; fetch everything at once instead:
+
+  ```bash
+  gh issue view XYZ --json title,state,labels,body,comments \
+    --jq '"# \(.title)  [\(.state)]\nLabels: \(.labels | map(.name) | join(", "))\n\n\(.body)\n\n=== \(.comments | length) comment(s) ===" + (.comments | map("\n\n--- \(.author.login) @ \(.createdAt) ---\n\(.body)") | join(""))'
+  ```
+
+  Note the Julia version, package version, and OS the reporter used, plus any
+  stack trace or reproducer they provided.
 - Read the conversation in this session and any reference material it points to
   (linked issues/PRs, the relevant source, the docs).
 - Skim recent history for an already-landed fix: `git log --oneline -20` and, if
