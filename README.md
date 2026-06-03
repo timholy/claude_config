@@ -34,6 +34,7 @@ Interactive tools:
 
 Focused maintenance tools:
 
+- `/fix-issue`: resolve an issue reported on the issue-tracker
 - `/update-compat`: used when a dependency releases a new breaking version
 - `/freshen-docstrings`: polish the "docstrings" for methods, types, and constants in a package
 - `/freshen-docs`: polish the README and/or [Documenter](https://documenter.juliadocs.org/stable/) documentation
