@@ -54,8 +54,8 @@ From the MWE and root cause, pick exactly one path:
 
 - **Bug to fix** → step 4a.
 - **Limitation that should be documented** → step 4b.
-- **No package change needed** (reporter-error, already fixed, or cannot
-  replicate) → step 4c.
+- **No package change needed** (reporter-error, already fixed, awaiting upstream
+  fix, or cannot replicate) → step 4c.
 
 ## 4. Act
 
@@ -82,8 +82,19 @@ and confirm the switch actually happened:
 ```bash
 git fetch origin
 default=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
-git switch -c teh/fixXYZ "origin/$default"   # or the branch name the user gave
-git branch --show-current                     # must print teh/fixXYZ, NOT $default
+# --no-track is REQUIRED. Branching off a remote-tracking ref otherwise sets the
+# new branch's upstream to origin/$default. A later push — especially an IDE
+# "sync" like VSCode's *Synchronize Changes* — would then fast-forward your
+# commits straight onto the default branch instead of publishing a feature
+# branch, silently bypassing review. With no upstream, a bare `git push` fails
+# fast and VSCode offers *Publish Branch* (→ origin/teh/fixXYZ) instead.
+git switch --no-track -c teh/fixXYZ "origin/$default"   # or the branch name the user gave
+git branch --show-current                                # must print teh/fixXYZ, NOT $default
+# Guard: the branch must have NO upstream. If this prints one, you used the wrong
+# flag — delete the branch and recreate it with --no-track.
+git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null \
+  && echo "ERROR: upstream is set (see above); recreate teh/fixXYZ with --no-track" \
+  || echo "ok: no upstream"
 ```
 
 `teh` = user initials, `XYZ` = issue number; the user may instead supply a
@@ -123,6 +134,12 @@ branch by the switch.
   commit message.
 - Subject ≤ 50 chars (72 max), no issue number. Put `Fixes #XYZ` in the body so
   GitHub auto-closes on merge (multiple: `Fixes #abc; fixes #def`).
+- When the user approves the push, publish the *feature* branch explicitly —
+  `git push -u origin HEAD` (creates `origin/teh/fixXYZ` and sets the matching
+  upstream). Never push to the default branch. If the user pushes from an IDE
+  instead, the `--no-track` branch above will offer *Publish Branch*, which does
+  the same thing safely; a *Synchronize Changes* prompt would mean the upstream
+  is misconfigured — stop and fix it before pushing.
 
 ### 4c. Report findings (no change)
 
@@ -134,3 +151,4 @@ handles all communication with the reporter. This path covers:
   your summary);
 - you cannot replicate the issue (state what you tried and which Julia version —
   e.g. the `+lts` / `+release` / `+1.x` channel you used).
+- the issue is still relevant, but fixing it is blocked on an upstream issue.
