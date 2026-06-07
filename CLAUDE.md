@@ -18,6 +18,13 @@
 - Exploit `Revise` to amortize the cost of compilation time, which for Julia is
   quite high. This *requires* that you use the MCP server to avoid starting a
   new Julia session each time.
+  Exceptions:
+  + When debugging/developing non-Revisable packages. These include Revise itself
+    and its dependencies.
+  + For measurement/benchmarking work where each run is a one-shot fresh process
+    (cold package-load timing, invalidation analysis, etc.). Particularly for
+    invalidation analyses, loading Revise can perturb results and cause confusion.
+  In such cases, run julia directly from the shell.
 
 - Use `Pkg.test()` for a final run only when ready to submit a pull request.
 
@@ -124,6 +131,14 @@ figures on the monitor.
   of intent instead. Bug history is only rarely relevant, avoid "Formerly
   this..." unless the explanation seems likely to be effective in heading off
   future misguided changes.
+
+- Code-comments should focus on what *is* true about the (new) code. History,
+  motivating examples, and long-term goals are relevant only in rare cases.
+  *Never* reference a planning document unless it is a long-term commitable
+  artifact in the repository.
+
+- Code-comments should approximately match the density, detail, and abstraction
+  level of the surrounding code-base.
 
 - Commit subject lines should ideally be shorter than lines in the body (aim for
   <=50, up to 72 OK) due to formatting on GitHub.
