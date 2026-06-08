@@ -45,6 +45,7 @@ Focused maintenance tools:
 - `/freshen-coverage`: improve [test-coverage](https://en.wikipedia.org/wiki/Code_coverage)
 - `/freshen-aqua`: add [Aqua](https://github.com/JuliaTesting/Aqua.jl) tests to a package (enforce certain mechanical aspects of "engineering quality")
 - `/freshen-explicit-imports`: add [ExplicitImports](https://github.com/JuliaTesting/ExplicitImports.jl) as a test-dependency (more "engineering quality")
+- `/freshen-generic-axes`: improve code that indexes arrays to use generic machinery rather than assume `1:n` indexing
 - `/freshen-runic`: use [Runic](https://github.com/fredrikekre/Runic.jl) for auto-formatting without borking your `git-blame`
 - `/freshen-gitignore`: add missing common items to the `.gitignore`
 - `/limit-struct-mutability`: make `mutable struct`s immutable or add `const` annotations to specific fields

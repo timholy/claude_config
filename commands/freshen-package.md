@@ -1,5 +1,5 @@
 ---
-description: Orchestrate full Julia package freshening: gitignore, deprecations, Aqua, ExplicitImports, struct mutability, design/API/integration reviews, coverage, docstrings, documentation, and formatting
+description: Orchestrate full Julia package freshening: gitignore, deprecations, Aqua, ExplicitImports, struct mutability, design/API/integration reviews, generic indexing, coverage, docstrings, documentation, and formatting
 ---
 
 Walk through the following package maintenance steps for the Julia package in the current directory. The package module name is determined by reading `Project.toml`.
@@ -18,7 +18,7 @@ After completing a step:
   + if so, prompt the user to `/clear` the session and run `/freshen-package` again
   + if not, inform the user about the current status and ask permission to delete `.claude/freshen-package-status`
 
-The ordering rationale: cheap deterministic cleanup runs first to clear the deck and to handle the things the reviews would otherwise duplicate (Aqua, ExplicitImports). The three reviews then run on cleaned-up code while the user's attention is fresh — these are the highest-judgment steps. API-dependent finishing work (coverage, docstrings, docs) runs after the reviews so it targets the settled API. Runic formatting is last so the substantive modernization can be bundled into a small number of PRs without being interrupted by the runic step's forced merge to the default branch.
+The ordering rationale: cheap deterministic cleanup runs first to clear the deck and to handle the things the reviews would otherwise duplicate (Aqua, ExplicitImports). The three reviews then run on cleaned-up code while the user's attention is fresh — these are the highest-judgment steps. API-dependent finishing work (generic-indexing tests, coverage, docstrings, docs) runs after the reviews so it targets the settled API; generic-indexing tests come first in that group so their `src/` fixes and new tests are in place before coverage measures them. Runic formatting is last so the substantive modernization can be bundled into a small number of PRs without being interrupted by the runic step's forced merge to the default branch.
 
 ---
 
@@ -70,6 +70,11 @@ Run `/review-api`. **Do not proceed to the next `/freshen-package` step until th
 ### Optional: integration review
 
 Run `/review-integration`. **Do not proceed to the next `/freshen-package` step until the resulting plan is implemented to completion via `/review-implement`** — re-run `/freshen-package` only after the plan is fully consumed.
+
+---
+
+### TODO: enforce generic indexing
+Run `/freshen-generic-axes`.
 
 ---
 
