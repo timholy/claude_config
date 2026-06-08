@@ -112,8 +112,9 @@ branch by the switch.
   implementation requires (see the style guide); fail-fast on genuinely
   unexpected input rather than silently continuing.
 - Reference the issue in a code comment (a statement of intent, e.g.
-  `# issue #XYZ: ...`), not a history note. Do **not** put the issue number in
-  the commit subject.
+  `# issue #XYZ: ...`), not a history note — the comment must state what is true
+  of the code now, not its past (`rules/code-comments.md`). Do **not** put the
+  issue number in the commit subject.
 - Run the test as you iterate, using whichever session model step 2 selected
   (shared MCP session, or fresh process for the fresh-session packages). Reserve
   `Pkg.test()` for a final full-suite pass once you believe the fix is complete.

@@ -126,19 +126,11 @@ figures on the monitor.
   GitHub is also a social media environment and I do not want you representing
   me without consent.
 
-- I dislike jargony comments in code or tests. When fixing latent bugs, I've
-  seen agents frequently tag them "Regression: blah blah". Provide a statement
-  of intent instead. Bug history is only rarely relevant, avoid "Formerly
-  this..." unless the explanation seems likely to be effective in heading off
-  future misguided changes.
-
-- Code-comments should focus on what *is* true about the (new) code. History,
-  motivating examples, and long-term goals are relevant only in rare cases.
-  *Never* reference a planning document unless it is a long-term commitable
-  artifact in the repository.
-
-- Code-comments should approximately match the density, detail, and abstraction
-  level of the surrounding code-base.
+- Comments, docstrings, and commit messages must stand on their own for a reader
+  who has only the repository: state what *is* true about the code now, not its
+  history, its motivation, or the plan it came from. This is a frequent failure
+  point — re-read the diff's comments before proposing a commit. Full guidance
+  and examples: `rules/code-comments.md`.
 
 - Commit subject lines should ideally be shorter than lines in the body (aim for
   <=50, up to 72 OK) due to formatting on GitHub.

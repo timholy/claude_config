@@ -233,7 +233,7 @@ action from the commit/tag.
   this session; it may not be part of the repo. Never cite `CHUNK-XXX`
   identifiers, "resolves CHUNK-NNN", or the plan filename in commit messages,
   PR descriptions, or code comments. Translate plan-internal references into a
-  self-contained description of what changed and why.
+  self-contained description of what changed and why. See `rules/code-comments.md`.
 - Do not invent new chunks unless the work demands it; trust the plan.
 - If `Stated values` would justify a different choice than the originating
   finding suggested, follow `Stated values` and record the divergence in

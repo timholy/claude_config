@@ -95,6 +95,11 @@ plan and apply the corresponding behavior throughout.
 - Prefer explicit over clever; this code will be read and modified by others
 - Add a docstring or comment block to every public function describing its contract:
   what it expects, what it returns, what it assumes
+- **Comments and docstrings describe the code, not the plan.** State what the code
+  does and the invariants it holds — never cite `CHUNK-XXX`, the plan/session
+  files, "as planned", or what the code used to be. The plan, session handoff, and
+  working-knowledge you read in Step 1 are context for *you*; the source must read
+  as if that scaffolding never existed. See `rules/code-comments.md`.
 - For `releasable-package` targets: docstrings must be complete and follow the language
   convention (Julia: `"""..."""` above the function; Python: NumPy or Google style;
   R: roxygen2; MATLAB: leading comment block)
@@ -281,4 +286,4 @@ plan, or by asking for help) before the next session begins.
   for this session; it may not be part of the repo. Never cite `CHUNK-XXX`
   identifiers, "resolves CHUNK-NNN", or the plan filename in commit messages,
   PR descriptions, or code comments. Translate plan-internal references into a
-  self-contained description of what changed and why.
+  self-contained description of what changed and why. See `rules/code-comments.md`.

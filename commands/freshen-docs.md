@@ -16,7 +16,7 @@ Whether via README or `docs/`, the documentation should include:
 
 Note: docstring coverage on exported and public symbols is handled by `/freshen-docstrings`, not this skill.
 
-Summarize findings and suggestions for the user. **[pause for approval]** Then implement.
+Summarize findings and suggestions for the user. **[pause for approval]** Then implement. Documentation prose, like code comments, should describe the package as it is now, not its development history or planning (`rules/code-comments.md`).
 
 Code examples in documentation should use `jldoctest` blocks where feasible so they are verified during CI. `jldoctest` output must match exactly, so ensure it is deterministic: use fixed inputs rather than `rand()`, and watch for unordered collections (`Dict`, `Set`), platform-sensitive numeric formatting, or object addresses in `show` output — restructure the assertion (e.g., sort and collect an unordered result) to avoid fragility. Examples with expensive setup, side effects, or inherently non-deterministic output are acceptable exceptions.
 

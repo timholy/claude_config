@@ -20,7 +20,7 @@ Conclude with a summary of recommendations about any changes that cross threshol
 
 ## 3. Implement
 
-Write new docstrings and fix approved issues. When making changes, instead of reading full source files, where possible use targeted reads/writes using the file and line numbers extracted during the audit. To avoid changing line numbers for future edits, this may require you to edit files starting at the end and working your way towards the beginning.
+Write new docstrings and fix approved issues. A docstring states what the symbol does and the contract it holds for a reader who has only the repository — not its history or how it came to be (`rules/code-comments.md`). When making changes, instead of reading full source files, where possible use targeted reads/writes using the file and line numbers extracted during the audit. To avoid changing line numbers for future edits, this may require you to edit files starting at the end and working your way towards the beginning.
 
 Any examples should be tested via MCP to be certain they work. You may take it for granted that the user has issued `using M` prior to running the example. Other setup, module-qualification, etc., should be spelled out.
 

@@ -22,6 +22,8 @@ src/Manifest.toml
 src/Manifest-v*.toml
 *.highwatermark
 *.lock
+__pycache__/
+*.pyc
 settings.json
 .last-cleanup
 rules/private.md

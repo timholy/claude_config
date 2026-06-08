@@ -8,6 +8,10 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 - **CLAUDE.md**: general instructions applicable in every session. Includes stance, programming language and style choices, MCP-agent debugging tips, and devops tips (commits, GitHub etiquette). If you use this, customize it extensively to your own preferences.
 
+- **[rules/](rules)**: focused guidance files that the harness auto-loads into every session, exactly like CLAUDE.md (they must live in `~/.claude/rules/` for this to happen — no `@import` is needed, but the behavior is a harness convention). Splitting these out of CLAUDE.md keeps each topic individually addressable, so a skill can cite it by path and other rules can cross-reference it with `[[name]]` links. Current rules cover code-comment discipline and Julia-specific correctness (generic indexing, `@inbounds`).
+
+- **[hooks/](hooks)**: scripts invoked by the harness around tool calls. For example, `no-plan-comments.py` runs after every edit and reminds the agent if planning/history scaffolding has leaked into code comments. Hooks are *registered* in `~/.claude/settings.json`, which is git-ignored here to avoid conflicts with user customizations. The durable, shareable registration is committed instead as [settings.example.json](settings.example.json) — copy its `hooks`/`permissions` blocks into your own `~/.claude/settings.json` (adjusting paths; `$HOME` is expanded by the shell that runs the hook).
+
 - a collection of [skills](https://claude.com/docs/skills/overview) in [commands/](commands)
 
 - a few code fragments in [julia-code/](julia-code) and [subagents](https://code.claude.com/docs/en/sub-agents) (in [agents](agents)) that harvest data used by the main agent
