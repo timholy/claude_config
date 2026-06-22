@@ -10,8 +10,8 @@
 
 # Julia versions
 
-- `julia` uses the LTS (1.10)
-- `julia +1` uses the current release (currently 1.12)
+- `julia` uses the current release
+- `julia +lts` uses the LTS version (currently 1.10)
 
 # Debugging Julia code
 
