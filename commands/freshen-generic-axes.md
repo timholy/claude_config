@@ -12,6 +12,8 @@ the durable teacher, since a red suite corrects code that a style rule does not.
 
 ## 1. Add OffsetArrays as a test dependency
 
+If OffsetArrays is already a project dependency, this step can be skipped.
+
 Mirror however the project already specifies test deps:
 
 - **If `test/Project.toml` exists**: `julia --project=test -e 'using Pkg; Pkg.add("OffsetArrays")'` and add a `[compat]` bound there.
@@ -25,21 +27,44 @@ Add a `[compat]` bound for OffsetArrays — read the installed minor version fro
 
 The candidates are exported/public functions whose arguments are arrays (`AbstractArray`/`AbstractVector`/`AbstractMatrix`, or unannotated arguments documented to be arrays) and that either return an array or index into their inputs. Skip functions that take no array, or whose array argument is annotated narrowly enough (`Matrix{Float64}`, `Vector{UInt8}`) that they make no genericity promise.
 
-Classify each candidate by output shape — it determines the assertion in Step 4:
+Classify each candidate by output shape — it determines the assertion in Step 4. Some possible classifications:
 - **index-matched array out** (e.g. `map`-like, transforms): result axes must track the input.
 - **reduction/scalar out** (e.g. `sum`-like): only value-invariance under wrapping applies; axes don't.
 - **multi-array in**: also has a dimension-consistency path to test.
+
+**Genericity is a per-axis promise, not a per-array one.** Before settling on the
+output shape, decide what each *dimension* of each array argument means — they do
+not all carry the same promise:
+
+- A **data axis** indexes something concrete — samples, features, spatial
+  positions, pixels — that exists independently of the operation and flows
+  through to the output. Honor the contract here: index it with `axes(A, d)`,
+  allocate so its axis propagates, and test that an offset on this dimension
+  carries through.
+- An **enumeration axis** merely *counts* interchangeable items — mixture
+  components, factorization rank, a list of fitted models — with no intrinsic
+  key. Its indices are bookkeeping, not data, and 1-based counting is the honest
+  representation. Index it with `1:k` / `axes(out, d)` and allocate it as
+  `Base.OneTo`; do not try to carry an input axis through it. (For example, in a
+  factorization `X ≈ W*H`, the row/column axes of `X` are data axes, but the
+  shared component axis `axes(W, 2) == axes(H, 1)` is an enumeration.)
 
 ## 3. Static pass over the source
 
 Read the implementations of the candidates. Flag the usual tells from the rule, but reason about each — they are signals, not certainties:
 - `1:length(A)`, `1:size(A, d)`, `1:n` derived from a length → usually should be `eachindex`/`axes`.
 - `Matrix{T}(undef, …)` / `zeros(T, …)` for an index-matched result → usually should be `similar(A, T, …)`.
-- literal `A[1]` / `A[end]`-as-length, hand-rolled `(i-1)*n+j` linear arithmetic.
+- literal `A[1]` should usually be `first(A)` or `A[begin]`
+- hand-rolled `(i-1)*n+j` linear arithmetic should subtract `firstindex(A)` instead of 1
 - `enumerate` where the loop body uses the counter as an index into `A` (should be `pairs`/`eachindex`); `enumerate` used as a genuine counter is fine.
 - missing `axes(A) == axes(B)` (or `eachindex(A, B)`) check in multi-array functions.
 
 Note candidates flagged here — Step 4's tests should confirm them and may catch subtler cases the read missed.
+
+Try to ensure the implementation uses generic operations. Handling offset-axes
+with a bunch of `collect`s or `copyto!(OffsetArray(zeros(...)), result)` calls
+performs needless allocation and is often strictly worse than just asserting
+that the algorithm requires 1-based indexing.
 
 ## 4. Scaffold wrap-and-compare tests
 
@@ -50,19 +75,24 @@ For each candidate, run it on the plain input, then on the same data wrapped two
     ref = f(x)
 
     # shifted axes — the sharpest test
-    xo = OffsetArray(x, ntuple(_ -> -2, ndims(x)))
+    offset = ntuple(_ -> -2, ndims(x))       # pick sensibly (data axes only, not enumerate axes)
+    xo = OffsetArray(x, offset)
     yo = f(xo)
-    @test collect(yo) == collect(ref)        # values invariant to the wrapping
-    @test axes(yo) == axes(xo)               # index-matched output only; drop for reductions
+    # The tests below depend on what `f` actually does: here we're assuming that location is irrelevant to the operation it performs.
+    # `sqrt.(xo)` and `blur(xo)` would likely qualify — `blur` couples neighbors and may even change shape
+    # (if it adds padding), yet stays equivariant either way;
+    # `center_of_mass(xo)` does not — its *value* depends on the axes, so it breaks the `collect` line below,
+    # not just the `axes` line.
+    # Not all `f` behave alike.
+    @test collect(yo) == collect(ref)                # the values will be independent of the wrapping
+    @test axes(yo) == axes(OffsetArray(ref, offset)) # offsets are preserved even if `f` changes the shape
 
     # lazy wrapper — catches `Array`-ness / contiguity assumptions
     @test f(view(x, ntuple(_ -> Colon(), ndims(x))...)) == ref
 end
 ```
 
-`axes(yo) == axes(xo)` is the load-bearing line for index-matched outputs — it is exactly what `1:length`/`Matrix{T}(undef,…)` code cannot satisfy. For reductions, keep only the value comparison. For multi-array functions, also assert the mismatch path: `@test_throws DimensionMismatch f(randn(5), randn(6))`.
-
-For a function that *legitimately* does not promise generic axes, the correct outcome is not a fix but a declaration: it should call `Base.require_one_based_indexing` on its inputs, and the test asserts an offset input errors cleanly (`@test_throws f(OffsetArray(...))`). That is a passing, intentional test — not a gap.
+For a function that *legitimately* does not promise generic axes on *any* dimension, the correct outcome is not a fix but a declaration: it should call `Base.require_one_based_indexing` on its inputs, and the test asserts an offset input errors cleanly (`@test_throws f(OffsetArray(...))`). That is a passing, intentional test — not a gap. `require_one_based_indexing` is whole-array, so it is the right call only when every axis of the argument is an enumeration (or the algorithm really wants to be 1-based).
 
 ## 5. Report and propose fixes
 
