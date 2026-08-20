@@ -159,3 +159,6 @@ figures on the monitor.
 
 - For commits written by agents, use "Assisted-by" rather than "Co-authored-by",
   and fill in with the appropriate model/version/email details.
+
+- When running multithreaded code or doing a parallel build, leave some cores
+  available for Tim to work on other tasks.
