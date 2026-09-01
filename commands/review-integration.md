@@ -207,7 +207,19 @@ Before writing the plan, ask the user for a short paragraph (or bullets) coverin
 
 The reply lands verbatim in the plan's `Stated values` section.
 
-Also ask: **"Would you like to post this review to a GitHub issue? If so, provide the issue number."** If the user provides one, record it in the plan's Metadata as `- **Issue**: #NNN`; otherwise record `- **Issue**: n/a`. Commit messages written by the implementer should reference the issue number when one is set.
+Also ask: **"Would you like this review posted to GitHub? (a) open a new issue, (b) append it to an existing issue — give me the number, (c) no."**
+
+- For (a), draft the title and body, show them to the user, and run
+  `gh issue create` only after they approve the exact text. GitHub assigns the
+  number; read it from the URL the command prints.
+- For (b), use the number the user gave, and likewise get approval for the exact
+  comment text before running `gh issue comment`.
+- For (c), or if the repository has no GitHub remote or `gh` is unavailable,
+  record `- **Issue**: n/a`.
+
+Record the resulting number in the plan's Metadata as `- **Issue**: #NNN`.
+Commit messages written by the implementer should reference the issue number
+when one is set.
 
 Also, only if any approved item is likely to be breaking (most bug fixes that change observable behavior count), ask about release strategy: cut a final non-breaking release before the first behavior change? Release between clusters or batch into one terminal release? `decide-later` is acceptable.
 
