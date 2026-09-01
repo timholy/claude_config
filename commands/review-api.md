@@ -1,7 +1,5 @@
 ---
 description: Review a Julia package's public API for consistency with modern Julia conventions and idioms
-model: Opus
-effort: medium
 ---
 
 Review the Julia package in the current working directory for API design convention issues. The goal is not to fix bugs or deprecated syntax — assume the code runs correctly on modern Julia. The goal is to identify places where the package's own API would feel surprising or inconsistent to a user who learned Julia in the modern era (1.6+), by comparison with the conventions established by Base and the standard library.

@@ -1,7 +1,5 @@
 ---
 description: Review a Julia package for dependency-interface compliance, latent bugs, and user friction by reading source, tests, and docs directly
-model: Opus
-effort: high
 ---
 
 Review the Julia package in the current working directory for issues that the structured `/review-design` and `/review-api` skills are designed *not* to surface. Those skills work from distilled artifacts (a conceptual map, an API inventory) and explicitly assume the code is correct and idiomatic. This skill is the deliberate inverse: read source, tests, and documentation **directly**, and look for things that only become visible inside the implementation and at the package's seams with the outside world.

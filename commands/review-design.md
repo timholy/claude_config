@@ -1,7 +1,5 @@
 ---
 description: Review a Julia package's design for conceptual coherence: scope, type hierarchy, overlaps, abstraction level, and composability
-model: Opus
-effort: high
 ---
 
 Review the Julia package in the current working directory for conceptual design issues. This is not a correctness check or a convention check — assume the code runs and follows modern Julia idioms. The question is whether the package's design is internally coherent: does it have a clear identity, a sensible type hierarchy, a consistent level of abstraction, and an API that composes naturally without exposing implementation accidents?
