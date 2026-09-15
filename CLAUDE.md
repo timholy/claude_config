@@ -32,7 +32,13 @@
   new Julia session each time. The MCP server runs `Revise.revise()`
   automatically before every eval, so edits to loaded packages are already
   applied when your code runs; calling `Revise.revise()` yourself is redundant.
-  Exceptions:
+  While Revise historically could not redefine `struct`s, this was fixed as of
+  Julia 1.12 and Revise 3.17. Revise does have a few things it cannot track,
+  which include macro bodies and other code generators, data-dependent method
+  definitions (`if data; f() = 1; else f() = 2; end` will not update if `data`
+  changes), world-frozen code like Tasks, changing non-literal `include`s, and a
+  few other corner cases.
+  There are times to avoid Revise:
   + When debugging/developing non-Revisable packages. These include Revise itself
     and its dependencies.
   + For measurement/benchmarking work where each run is a one-shot fresh process
