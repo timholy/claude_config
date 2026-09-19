@@ -152,6 +152,14 @@ figures on the monitor.
   point — re-read the diff's comments before proposing a commit. Full guidance
   and examples: `rules/code-comments.md`.
 
+- Similar to the above, do not commit planning documents, agent conversations,
+  narratives about benchmark results, etc., to reusable packages. Such files
+  should generally be `.git/info/exclude`d rather than `.gitignore`d because the
+  names are not generic to all future users of the package. Manuscript
+  repositories are borderline; ask the user for desired policy here. The only
+  case where they should be committed by default is a repository that is
+  explicitly designed as a planning/exploration repository.
+
 - Commit subject lines should ideally be shorter than lines in the body (aim for
   <=50, up to 72 OK) due to formatting on GitHub.
 
@@ -167,4 +175,4 @@ figures on the monitor.
   and fill in with the appropriate model/version/email details.
 
 - When running multithreaded code or doing a parallel build, leave some cores
-  available for Tim to work on other tasks.
+  available for the user to work on other tasks.
