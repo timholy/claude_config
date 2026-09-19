@@ -1,6 +1,6 @@
 ---
 description: Audit a Julia package's array functions for 1-based indexing assumptions, add OffsetArrays/view tests that enforce the generic-indexing contract, and report fixes
-model: Sonnet
+model: sonnet
 effort: low
 ---
 

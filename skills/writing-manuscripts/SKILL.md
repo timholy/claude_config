@@ -1,6 +1,7 @@
 ---
 name: writing-manuscripts
-description: This skill is manually triggered by the user
+disable-model-invocation: true
+description: This skill is a "style guide" for contributing to publication-quality manuscripts
 ---
 
 - Prose cannot be rigidly prescribed: items below should be treated as general

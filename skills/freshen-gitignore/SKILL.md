@@ -1,6 +1,6 @@
 ---
 description: Update .gitignore for a Julia package to cover coverage files, manifests, and docs build artifacts
-model: Sonnet
+model: sonnet
 effort: low
 ---
 

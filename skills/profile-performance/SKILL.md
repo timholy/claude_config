@@ -1,6 +1,6 @@
 ---
 description: Profile Julia code to find performance bottlenecks — CPU hot spots, runtime dispatch, GC pressure, allocations, and type instabilities — using a fully headless (no-GUI) workflow
-model: Opus
+model: opus
 effort: medium
 ---
 

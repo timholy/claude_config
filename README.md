@@ -12,11 +12,11 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 - **[hooks/](hooks)**: scripts invoked by the harness around tool calls. For example, `no-plan-comments.py` runs after every edit and reminds the agent if planning/history scaffolding has leaked into code comments. Hooks are *registered* in `~/.claude/settings.json`, which is git-ignored here to avoid conflicts with user customizations. The durable, shareable registration is committed instead as [settings.example.json](settings.example.json) — copy its `hooks`/`permissions` blocks into your own `~/.claude/settings.json` (adjusting paths; `$HOME` is expanded by the shell that runs the hook).
 
-- a collection of [skills](https://claude.com/docs/skills/overview) in [commands/](commands)
+- a collection of [skills](https://claude.com/docs/skills/overview) in [skills/](skills)
 
 - a few code fragments in [julia-code/](julia-code) and [subagents](https://code.claude.com/docs/en/sub-agents) (in [agents](agents)) that harvest data used by the main agent
 
-### Skills/commands
+### Skills
 
 #### Tools for doing science
 

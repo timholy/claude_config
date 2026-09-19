@@ -1,8 +1,9 @@
 ---
 name: new-analysis-plan
+disable-model-invocation: true
 description: >
   Use this skill when the user wants to start a new analysis project and has an AGENT_INSTRUCTIONS or
-  project description to work from. Triggers only on explicit command `/new-analysis-plan`. This skill
+  project description to work from. This skill
   produces a persistent plan document that drives the companion `/new-analysis-implement` skill.
 # Recommended invocation: opus model, /effort high
 ---

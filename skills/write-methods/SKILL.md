@@ -1,9 +1,10 @@
 ---
 name: write-methods
+disable-model-invocation: true
 description: >
   Use this skill when the user wants a methods write-up of an analysis project — either a
   consolidated, living account of the whole project or a focused explanation of one stage or
-  result. Triggers only on the explicit command `/write-methods`. Its primary purpose is
+  result. Its primary purpose is
   human-agent alignment: reconstruct the chain from data to choices to key results, surface the
   challengeable assumptions, and ask the user to confirm the riskiest ones. Companion to
   `/new-analysis-plan` and `/new-analysis-implement`.

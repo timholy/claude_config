@@ -1,6 +1,6 @@
 ---
 description: Implement the next chunk of a planned design, API, or integration review. Reads DESIGN_REVIEW_PLAN.md, API_REVIEW_PLAN.md, or INTEGRATION_REVIEW_PLAN.md, implements one chunk (with a narrow batch exception for `decide` chunks), updates the plan, and prepares a clean handoff for the next session.
-model: Opus
+model: opus
 effort: medium
 ---
 

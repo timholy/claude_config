@@ -1,6 +1,6 @@
 ---
 description: Add ExplicitImports.jl to a Julia package, analyze import usage, fix problems, and add to the test suite
-model: Sonnet
+model: sonnet
 effort: low
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Rewrite a package's prose (docstrings, comments, docs pages, README) so it states what the code is and does now, in plain language, at the length the reader needs
-model: Opus
+model: opus
 effort: medium
 ---
 

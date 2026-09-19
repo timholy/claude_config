@@ -1,8 +1,9 @@
 ---
 name: new-analysis-implement
+disable-model-invocation: true
 description: >
   Use this skill when the user wants to implement the next step of a planned analysis project.
-  Triggers only on an explicit `/new-analysis-implement`. This skill reads the plan, implements
+  This skill reads the plan, implements
   exactly one chunk, updates the plan, and prepares a clean handoff for the next session.
   Only use this skill when an ANALYSIS_PLAN.md exists in the project and the user wants to make
   progress — do not implement ad hoc without it.
