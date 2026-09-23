@@ -1,5 +1,5 @@
 ---
-description: Audit and improve Julia package docs: README completeness, Documenter.jl `docs/` structure, jldoctest correctness, and CI deployment
+description: "Audit and improve Julia package docs: README completeness, Documenter.jl `docs/` structure, jldoctest correctness, and CI deployment"
 ---
 
 Inspect the current state of documentation (README and/or `docs/`):

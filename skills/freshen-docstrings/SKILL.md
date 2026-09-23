@@ -1,5 +1,5 @@
 ---
-description: Audit and improve Julia package docstrings: find missing/outdated docs on exported and public symbols, using Base.Docs.meta for context-efficient gap detection
+description: "Audit and improve Julia package docstrings: find missing/outdated docs on exported and public symbols, using Base.Docs.meta for context-efficient gap detection"
 model: sonnet
 effort: medium
 ---
