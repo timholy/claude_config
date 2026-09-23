@@ -23,17 +23,18 @@ Detect which plan file is present:
 If more than one exists, ask which one to work on this session. If none exist, stop and
 tell the user to run `/review-design`, `/review-api`, or `/review-integration` first.
 
-Read, in order:
+Read `~/.claude/skills/review-common/plan-file.md` for the plan-file schema
+before reading the plan. Then read, in order:
 
 1. The plan file. Identify:
-   - Package name, current version, kind (design vs api).
+   - Package name, current version, kind (design, api, or integration).
    - The `Stated values` section — this is the tiebreaker for ambiguous decisions.
    - The `Release strategy` section — pre-breaking release? inter-cluster releases?
    - Any answers already recorded in `Decisions`.
    - The next chunk(s) with status `not-started` whose dependencies are all `complete`.
    - Whether the current chunk belongs to a cluster with siblings still `not-started` — relevant when picking and when closing.
-2. The matching session handoff (`DESIGN_REVIEW_SESSION.md` or
-   `API_REVIEW_SESSION.md`) if present — this is the previous session's note to you.
+2. The matching session handoff (`DESIGN_REVIEW_SESSION.md`,
+   `API_REVIEW_SESSION.md`, or `INTEGRATION_REVIEW_SESSION.md`) if present — this is the previous session's note to you.
 
 Chunks have a slim schema: `Kind`, `Description`, `Status`, `Notes` are always present; `Breaking`, `Depends on`, and `Cluster` are present only when non-default. Treat absence of those optional fields as `no` / `none`.
 
@@ -166,7 +167,8 @@ After implementation:
 
 ## Step 6: Write the session handoff
 
-Write (overwriting) `DESIGN_REVIEW_SESSION.md` or `API_REVIEW_SESSION.md`:
+Write (overwriting) the session handoff matching the plan kind
+(`DESIGN_REVIEW_SESSION.md`, `API_REVIEW_SESSION.md`, or `INTEGRATION_REVIEW_SESSION.md`):
 
 ```markdown
 # Session Handoff — YYYY-MM-DD

@@ -56,6 +56,8 @@ Code review: I have *three* separate reviewing agents, plus a common `/review-im
 - `/review-api`: aligns the package API to the [Julia style guide](https://docs.julialang.org/en/v1/manual/style-guide/). Scales to large packages because it uses a subagent to extract the essentials of the source code.
 - `/review-integration`: detailed source-level review of the entire package, including tests and documentation. Only for packages small enough to be read in their entirety without filling the context window.
 
+The plan-file schema and interview questions these four skills share live in [skills/review-common/](skills/review-common), which is a reference directory rather than a skill.
+
 If I'm modernizing a package, I will typically run *all three* of these agents sequentially, implementing the changes for each before conducting the next review. I typically use the order in which they are described above. This tends to do easy/important cleanup early so that later review steps focus on polishing a package whose main components are well-shaped.
 
 One overall orchestrator:

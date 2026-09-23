@@ -20,7 +20,7 @@ Check how test dependencies are currently specified in this project:
 
   In either case, add a `[compat]` bound for ExplicitImports. Set the lower bound to the minor version `Pkg.add` just installed — read it straight from the install output (`ExplicitImports v1.15.0` → `ExplicitImports = "1.15"`). Do **not** use a looser bound like `"1"`: step 4 uses `test_explicit_imports`, which only exists from v1.15 onward, so an older resolved version would break the suite with an `UndefVarError`. A tight lower bound is harmless here — ExplicitImports is a test-only dependency, so it never constrains which Julia or package versions users can install.
 
-  Tip: I use `juliaup` to manage Julia versions, and `julia +1 --project ...` runs the current release (currently 1.12).
+  Tip: I use `juliaup` to manage Julia versions: `julia +1 --project ...` runs the current release and `julia +lts --project ...` runs the LTS.
 
 ## 2. Run ExplicitImports analysis
 

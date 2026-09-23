@@ -1,5 +1,5 @@
 ---
-description: Rewrite a package's prose (docstrings, comments, docs pages, README) so it states what the code is and does now, in plain language, at the length the reader needs
+description: Rewrite a package's prose (docstrings, comments, docs pages, README) so it states what the code is and does now, in plain language, at the length the reader needs. Use when the user asks to clean up, simplify, or de-jargon comments or docs, complains that prose reads like a plan or a pitch, or wants history and planning narrative stripped from the text; not for writing new documentation from scratch.
 model: opus
 effort: medium
 ---

@@ -1,5 +1,5 @@
 ---
-description: triage and fix a single item in a Julia package's issue tracker
+description: Triage and resolve one item from a Julia package's issue tracker, ending in a code fix, a doc fix, or a reasoned "no change needed". Use when the user points at an issue number or link, says "look at issue N", or pastes an issue body and asks what to do about it.
 ---
 
 Run inside a package git-repository. The user supplies a link or issue number
