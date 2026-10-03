@@ -14,9 +14,9 @@ description: This skill is a "style guide" for contributing to publication-quali
   search for it; the summary here is sufficient.
 
   Their central claim: readers have structural expectations about where kinds
-  of information appear in a sentence, and when prose violates them, readers
-  spend energy decoding structure that should have gone to content. Every unit
-  of discourse, at any scale, should serve a single function or make a single
+  of information appear in a sentence. When prose violates those expectations,
+  readers spend energy decoding structure that should have gone to content.
+  Every unit of discourse should serve a single function or make a single
   point. Their principles:
 
   1. Follow a grammatical subject as soon as possible with its verb.
@@ -35,31 +35,30 @@ description: This skill is a "style guide" for contributing to publication-quali
   These are expectations, not rules: skilled writers violate them to good
   effect, but only because they fulfill them most of the time.
 
-- Prefer plain prose, avoiding invented jargon or non-traditional metaphors.
-  Jargon is acceptable and encouraged when it is standard within the field of
-  anticipated readers. Manuscripts should not have the flavor of a pitch deck
-  or inappropriately use financial or tech-bro lingo.
-
 - Reader attention is finite and effortful, and directing it is one of the
   writer's main jobs. Before asking readers to follow a long or detailed
   passage, tell them what is at stake, what distinguishes this problem or
   solution from nearby ones, and why the obvious approaches fall short. This
   both motivates readers to continue and gives them a framework for
   interpreting each technical detail when it arrives. Rigor and systematic
-  results remain essential, but they usually land better after the intuition
+  results remain essential, but they are usually more impactful after the intuition
   is in place. Simon Peyton Jones's "How to Write a Great Research Paper"
-  makes the same case: once readers have the intuition they can follow the
-  details, but not the reverse. Concrete examples are often the cheapest way
-  to build that intuition: a small instance that exposes the difficulty,
-  then the general treatment.
+  makes this same case: once readers have the intuition they can follow the
+  details, but not the reverse. In some cases, a brief illustration, concrete
+  example, illuminating counterfactual, or analogy can help build that intuition.
 
-  The test is not whether a section opens with a question. It is whether a
-  reader who stops after the opening paragraph could say what the section
-  will settle, why it is not trivially settled, and what the answer will
-  hinge on. A rhetorical question with no stakes attached fails this test;
-  it is decoration, not motivation. After drafting, check each section
-  against it and restructure the ones that fail. How much of this framing is
-  appropriate depends on the journal and audience.
+  A reader who stops after the opening paragraph should be able to say
+  what the section will settle, why it is not trivially settled, and what the
+  answer will hinge on. A rhetorical question with no stakes attached may not
+  meet this standard.
+  
+  How much of this framing is appropriate may depend on the content, journal,
+  and audience.
+
+- Prefer plain prose, avoiding invented jargon or non-traditional metaphors.
+  Jargon is acceptable and encouraged when it is standard within the field of
+  anticipated readers. Manuscripts should not have the flavor of a pitch deck
+  or inappropriately use financial or tech-bro lingo.
 
 - When reporting results, use the appropriate tense: mathematical results *are*
   true, but experiments *were* performed in lab, on particular benchmarks, or on
