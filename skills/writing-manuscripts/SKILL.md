@@ -58,7 +58,10 @@ description: This skill is a "style guide" for contributing to publication-quali
 - Prefer plain prose, avoiding invented jargon or non-traditional metaphors.
   Jargon is acceptable and encouraged when it is standard within the field of
   anticipated readers. Manuscripts should not have the flavor of a pitch deck
-  or inappropriately use financial or tech-bro lingo.
+  or inappropriately use financial or tech-bro lingo. While humans sometimes
+  personify objects or concepts, agents often take this too far: for example,
+  in most cases it's better to say that an algorithm depends on its inputs,
+  not that it *reads* its inputs.
 
 - When reporting results, use the appropriate tense: mathematical results *are*
   true, but experiments *were* performed in lab, on particular benchmarks, or on
