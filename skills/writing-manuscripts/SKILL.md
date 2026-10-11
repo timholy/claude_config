@@ -70,5 +70,14 @@ description: This skill is a "style guide" for contributing to publication-quali
   readers or in all circumstances, the greater the incentive to report in
   past-tense.
 
+- Avoid the temptation to describe every result, particularly numerical ones,
+  in prose: figures or tables are generally the preferred format for most
+  quantitative data. In an analysis I did of an agent-generated draft of
+  a results section for a numerical analysis manuscript, agents had dumped
+  about eight times as many numbers into the results section compared to the
+  median of 16 peer-reviewed manuscripts written without agentic assistance.
+  A number belongs in the prose only if it materially supports what the reader
+  should take away from the subsection. 
+
 - In single-author manuscripts, avoid the "authorial we." Other forms of "we"
   (author-reader, community, etc.) are acceptable.
