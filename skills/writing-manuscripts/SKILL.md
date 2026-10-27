@@ -51,6 +51,11 @@ description: This skill is a "style guide" for contributing to publication-quali
   what the section will settle, why it is not trivially settled, and what the
   answer will hinge on. A rhetorical question with no stakes attached may not
   meet this standard.
+
+  An opening is not a table of contents. Give the stakes and the few key terms
+  the reader should watch for; leave out roadmaps of every subsection and terms
+  that are defined later. An opening that previews all the details asks the
+  reader to absorb concepts not yet introduced, and blurs the few that matter.
   
   How much of this framing is appropriate may depend on the content, journal,
   and audience.
@@ -79,5 +84,16 @@ description: This skill is a "style guide" for contributing to publication-quali
   A number belongs in the prose only if it materially supports what the reader
   should take away from the subsection. 
 
+- Experiments should not exist merely to confirm a theorem ("Theorem 3.2
+  checks out"); that is the job of proofs and package tests. Experiments earn
+  their place by addressing what the theory cannot settle: how many iterations
+  convergence takes in practice, how tight a bound is, how a method behaves on
+  inputs outside a theorem's hypotheses.
+
 - In single-author manuscripts, avoid the "authorial we." Other forms of "we"
   (author-reader, community, etc.) are acceptable.
+ 
+- Do not mix analysis or writing code with writing prose: experience shows that
+  when those two are mixed in the same session, prose quality falls off a cliff.
+  Writing clear, human readable prose is difficult for agents and deserves full
+  attention.
