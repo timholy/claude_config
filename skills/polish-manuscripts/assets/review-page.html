@@ -1,0 +1,410 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column of review items grouped by question, with a sticky filter bar; each item carries its own decision control and note. */
+:root {
+  --paper: #f7f8fa;
+  --sheet: #ffffff;
+  --ink: #1d2230;
+  --muted: #5d6475;
+  --rule: #dde1e8;
+  --pen: #b4322b;          /* editor's red pencil */
+  --pen-soft: #f6e4e2;
+  --accept: #2f7a4a;  --accept-soft: #e2f1e7;
+  --modify: #9a6a12;  --modify-soft: #f6ecd6;
+  --reject: #5d6475;  --reject-soft: #e9ebef;
+  --discuss: #2c5a9e; --discuss-soft: #e1eaf7;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #14171e; --sheet: #1b1f28; --ink: #e5e8ef; --muted: #9aa2b3; --rule: #2d3340;
+  --pen: #ec7a70; --pen-soft: #3a2224;
+  --accept: #74c793; --accept-soft: #1d3326; --modify: #e3b65c; --modify-soft: #372c17;
+  --reject: #a3aab9; --reject-soft: #2a2f3a; --discuss: #86aef0; --discuss-soft: #1d2b44;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #14171e; --sheet: #1b1f28; --ink: #e5e8ef; --muted: #9aa2b3; --rule: #2d3340;
+  --pen: #ec7a70; --pen-soft: #3a2224;
+  --accept: #74c793; --accept-soft: #1d3326; --modify: #e3b65c; --modify-soft: #372c17;
+  --reject: #a3aab9; --reject-soft: #2a2f3a; --discuss: #86aef0; --discuss-soft: #1d2b44;
+  color-scheme: dark }
+
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); text-wrap: balance; margin: 0; }
+h1 { font-size: 2rem; font-weight: 650; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; font-weight: 650; }
+h3 { font-size: 1.08rem; font-weight: 650; line-height: 1.35; }
+code { font-family: var(--mono); font-size: 0.86em; background: var(--reject-soft); padding: 0 4px; border-radius: 3px; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pen); }
+.lede { color: var(--muted); max-width: 65ch; margin: 8px 0 0; }
+header { display: grid; gap: 6px; margin-bottom: 20px; }
+
+.summary { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-variant-numeric: tabular-nums; margin-top: 10px; }
+.bar { flex: 1 1 260px; height: 8px; border-radius: 4px; background: var(--rule); display: flex; overflow: hidden; min-width: 0; }
+.bar span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.88rem; color: var(--muted); }
+.legend b { color: var(--ink); font-weight: 600; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+
+.banner { border: 1px solid var(--rule); border-left: 3px solid var(--pen); background: var(--sheet); padding: 10px 14px; border-radius: 4px; font-size: 0.92rem; margin: 12px 0; }
+
+.general { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 14px; display: grid; gap: 8px; margin: 16px 0 8px; }
+.general label { font-weight: 600; }
+
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); padding-block: 10px; border-bottom: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.chip { font: inherit; font-size: 0.86rem; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); border-radius: 999px; padding: 3px 11px; cursor: pointer; }
+.chip[aria-pressed="true"] { border-color: var(--pen); background: var(--pen-soft); color: var(--ink); }
+.chip:focus-visible, .seg button:focus-visible, textarea:focus-visible, .toggle input:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 0.88rem; color: var(--muted); margin-left: auto; }
+
+section.group { margin-top: 30px; display: grid; gap: 12px; }
+.group-head { display: grid; gap: 2px; }
+.group-head p { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 65ch; }
+
+article.item { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+article.item[data-decision="accept"] { border-left: 3px solid var(--accept); }
+article.item[data-decision="modify"] { border-left: 3px solid var(--modify); }
+article.item[data-decision="reject"] { border-left: 3px solid var(--reject); }
+article.item[data-decision="discuss"] { border-left: 3px solid var(--discuss); }
+.item-top { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.id { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; color: var(--pen); }
+.prio { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--rule); color: var(--muted); }
+.prio.high { border-color: var(--pen); color: var(--pen); }
+.item h3 { flex: 1 1 300px; min-width: 0; }
+.body { margin: 0; max-width: 70ch; }
+.suggest { margin: 0; max-width: 70ch; color: var(--muted); }
+.suggest strong { color: var(--ink); font-weight: 600; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.82rem; color: var(--muted); }
+.meta code { font-size: 0.8rem; }
+.status { font-size: 0.88rem; padding: 6px 10px; border-radius: 4px; background: var(--discuss-soft); }
+.status b { font-weight: 600; }
+
+.respond { display: grid; gap: 8px; border-top: 1px dashed var(--rule); padding-top: 10px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { font: inherit; font-size: 0.86rem; border: 1px solid var(--rule); background: transparent; color: var(--ink); border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+.seg button:disabled { cursor: default; opacity: 0.55; }
+.seg button[data-v="accept"][aria-pressed="true"] { background: var(--accept-soft); border-color: var(--accept); }
+.seg button[data-v="modify"][aria-pressed="true"] { background: var(--modify-soft); border-color: var(--modify); }
+.seg button[data-v="reject"][aria-pressed="true"] { background: var(--reject-soft); border-color: var(--reject); }
+.seg button[data-v="discuss"][aria-pressed="true"] { background: var(--discuss-soft); border-color: var(--discuss); }
+textarea { font: inherit; font-size: 0.94rem; width: 100%; box-sizing: border-box; min-height: 2.6em; resize: vertical; border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; background: var(--paper); color: var(--ink); }
+.save { font-size: 0.8rem; color: var(--muted); min-height: 1.2em; }
+.save.err { color: var(--pen); }
+.empty { color: var(--muted); font-style: italic; }
+.plan { margin: 22px 0 8px; display: grid; gap: 10px; }
+.plan > p { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 65ch; }
+.sess { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 16px; display: grid; gap: 8px; min-width: 0; scroll-margin-top: 72px; }
+.sess-top { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.sess-top h3 { flex: 1 1 260px; min-width: 0; }
+.sstate.in-progress { border-color: var(--modify); color: var(--modify); }
+.sstate.done { border-color: var(--accept); color: var(--accept); }
+.sstate.waiting { border-color: var(--discuss); color: var(--discuss); }
+.sess-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.itemref { font-family: var(--mono); font-size: 0.8rem; text-decoration: none; color: var(--ink); border: 1px solid var(--rule); border-radius: 3px; padding: 0 6px; }
+.itemref:hover { border-color: var(--pen); }
+.itemref[data-state="done"] { background: var(--accept-soft); border-color: var(--accept); }
+.itemref[data-state="done"]::before { content: "✓ "; }
+.itemref[data-state="no-action"] { color: var(--muted); text-decoration: line-through; }
+.itemref[data-state="waiting-on-runs"] { background: var(--discuss-soft); }
+.meta a { color: var(--pen); }
+article.item { scroll-margin-top: 72px; }
+.sel { display: inline-flex; gap: 6px; align-items: center; font-size: 0.88rem; color: var(--muted); }
+.sel select { font: inherit; font-size: 0.86rem; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule); border-radius: 4px; padding: 2px 6px; }
+@media (prefers-reduced-motion: no-preference) { article.item { transition: border-color 0.2s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">__EYEBROW__</span>
+    <h1>__TITLE__</h1>
+    <p class="lede">__LEDE__</p>
+    <div class="summary" aria-live="polite">
+      <div class="bar" id="bar" role="img" aria-label="Decision progress"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner">Connecting to the response store…</div>
+
+  <div class="general">
+    <label for="note-_general">General comments or policy decisions</label>
+    <textarea id="note-_general" rows="3" placeholder="e.g. how aggressively to move material to appendices, which items to batch together"></textarea>
+    <div class="save" id="save-_general"></div>
+  </div>
+
+  <section class="plan" aria-labelledby="plan-h">
+    <h2 id="plan-h">Work plan</h2>
+    <p>__PLAN_BLURB__</p>
+    <div id="sessions"><p class="empty">No work plan recorded yet.</p></div>
+  </section>
+
+  <nav class="filters" aria-label="Filters">
+    <div id="groupChips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    <label class="sel">Session <select id="sessFilter"><option value="all">All</option></select></label>
+    <label class="toggle"><input type="checkbox" id="onlyOpen"> Undecided only</label>
+  </nav>
+
+  <main id="list"></main>
+</div>
+
+<script>
+const GROUPS = __GROUPS__;
+
+const ITEMS = __ITEMS__;
+
+const DECISIONS = [
+  { v: "accept", label: "Accept", color: "var(--accept)" },
+  { v: "modify", label: "Accept with changes", color: "var(--modify)" },
+  { v: "reject", label: "Reject", color: "var(--reject)" },
+  { v: "discuss", label: "Discuss", color: "var(--discuss)" }
+];
+const PRIO = { high: "High", med: "Medium", low: "Low" };
+
+const fb = {};          // id -> {decision, note}
+const st = {};          // id -> {state, note}  (written by Claude)
+const ui = {};          // id -> element refs
+let sessions = [];      // [{n, title, scope, state, note, items}]  (written by Claude)
+const queues = {};      // per-doc write chain
+let db = null;
+let writable = false;
+let groupFilter = "all";
+
+function richText(el, s) {
+  // `code` spans become <code>; everything else is text.
+  s.split("`").forEach((part, i) => {
+    if (!part) return;
+    if (i % 2) { const c = document.createElement("code"); c.textContent = part; el.appendChild(c); }
+    else el.appendChild(document.createTextNode(part));
+  });
+}
+function h(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) richText(e, text); return e; }
+
+function build() {
+  const chips = document.getElementById("groupChips");
+  [{ id: "all", name: "All" }, ...GROUPS].forEach(g => {
+    const b = h("button", "chip", g.id === "all" ? "All" : g.name);
+    b.type = "button"; b.dataset.g = g.id; b.setAttribute("aria-pressed", g.id === "all" ? "true" : "false");
+    b.addEventListener("click", () => { groupFilter = g.id; applyFilters(); });
+    chips.appendChild(b);
+  });
+  document.getElementById("onlyOpen").addEventListener("change", applyFilters);
+  document.getElementById("sessFilter").addEventListener("change", applyFilters);
+
+  const list = document.getElementById("list");
+  GROUPS.forEach(g => {
+    const sec = h("section", "group"); sec.dataset.g = g.id;
+    const head = h("div", "group-head");
+    head.appendChild(h("h2", null, g.name)); head.appendChild(h("p", null, g.blurb));
+    sec.appendChild(head);
+    ITEMS.filter(it => it.g === g.id).forEach(it => sec.appendChild(buildItem(it)));
+    list.appendChild(sec);
+  });
+
+  const gen = document.getElementById("note-_general");
+  ui._general = { note: gen, save: document.getElementById("save-_general"), article: null, btns: [] };
+  wireNote("_general", gen);
+}
+
+function buildItem(it) {
+  const a = h("article", "item"); a.id = "item-" + it.id; a.dataset.id = it.id;
+  const top = h("div", "item-top");
+  top.appendChild(h("span", "id", it.id));
+  top.appendChild(h("h3", null, it.t));
+  top.appendChild(h("span", "prio " + it.p, PRIO[it.p]));
+  a.appendChild(top);
+  if (it.b) a.appendChild(h("p", "body", it.b));
+  if (it.s) { const s = h("p", "suggest"); const lab = document.createElement("strong"); lab.textContent = "Suggested: "; s.appendChild(lab); richText(s, it.s); a.appendChild(s); }
+  const meta = h("div", "meta");
+  if (it.r && it.r.length) {
+    const loc = h("span"); loc.appendChild(document.createTextNode("Where: "));
+    it.r.forEach((r, i) => { if (i) loc.appendChild(document.createTextNode(" ")); const c = document.createElement("code"); c.textContent = r; loc.appendChild(c); });
+    meta.appendChild(loc);
+  }
+  if (it.rel && it.rel.length) meta.appendChild(h("span", null, "Related: " + it.rel.join(", ")));
+  const sess = h("span"); meta.appendChild(sess);
+  a.appendChild(meta);
+  const status = h("div", "status"); status.hidden = true; a.appendChild(status);
+
+  const resp = h("div", "respond");
+  const seg = h("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Decision for " + it.id);
+  const btns = DECISIONS.map(d => {
+    const b = h("button", null, d.label); b.type = "button"; b.dataset.v = d.v; b.setAttribute("aria-pressed", "false"); b.disabled = true;
+    b.addEventListener("click", () => setDecision(it.id, d.v));
+    seg.appendChild(b); return b;
+  });
+  resp.appendChild(seg);
+  const note = document.createElement("textarea"); note.id = "note-" + it.id; note.rows = 2; note.disabled = true;
+  note.placeholder = "Note (optional): what to change, or why not";
+  note.setAttribute("aria-label", "Note for " + it.id);
+  resp.appendChild(note);
+  const save = h("div", "save"); resp.appendChild(save);
+  a.appendChild(resp);
+  ui[it.id] = { article: a, btns, note, save, status, sess };
+  wireNote(it.id, note);
+  return a;
+}
+
+function wireNote(id, el) {
+  let timer = null;
+  el.addEventListener("input", () => {
+    el.dataset.dirty = "1";
+    clearTimeout(timer); timer = setTimeout(() => commitNote(id), 900);
+  });
+  el.addEventListener("blur", () => { clearTimeout(timer); if (el.dataset.dirty) commitNote(id); });
+}
+function commitNote(id) {
+  const el = ui[id].note; delete el.dataset.dirty;
+  const cur = fb[id] || {};
+  if ((cur.note || "") === el.value) return;
+  fb[id] = { ...cur, note: el.value }; write(id);
+}
+function setDecision(id, v) {
+  const cur = fb[id] || {};
+  fb[id] = { ...cur, decision: cur.decision === v ? null : v };
+  paintItem(id); paintSummary(); write(id);
+}
+
+function write(id) {
+  if (!db || !writable) return;
+  const body = { decision: fb[id].decision || null, note: fb[id].note || "", updatedAt: new Date().toISOString() };
+  const save = ui[id].save;
+  save.className = "save"; save.textContent = "Saving…";
+  queues[id] = (queues[id] || Promise.resolve()).then(() => db.doc("feedback/" + id).set(body)).then(
+    () => { save.className = "save"; save.textContent = "Saved"; },
+    e => {
+      save.className = "save err";
+      if (e && e.code === "invalid_argument") { save.textContent = "Not saved: this view can't write responses."; setWritable(false); }
+      else save.textContent = "Not saved (" + ((e && e.code) || "error") + "). Try again in a moment.";
+    });
+}
+
+function paintItem(id) {
+  const u = ui[id]; if (!u) return;
+  const f = fb[id] || {};
+  if (u.article) u.article.dataset.decision = f.decision || "";
+  u.btns.forEach(b => b.setAttribute("aria-pressed", b.dataset.v === f.decision ? "true" : "false"));
+  if (document.activeElement !== u.note && !u.note.dataset.dirty) u.note.value = f.note || "";
+  const s = st[id];
+  if (u.status) {
+    if (s && (s.state || s.note)) {
+      u.status.hidden = false; u.status.textContent = "";
+      const b = document.createElement("b"); b.textContent = "Status: " + (s.state || "noted"); u.status.appendChild(b);
+      if (s.note) u.status.appendChild(document.createTextNode(" — " + s.note));
+    } else u.status.hidden = true;
+  }
+  if (u.sess) {
+    u.sess.textContent = "";
+    sessionsFor(id).forEach((s, i) => {
+      u.sess.appendChild(document.createTextNode(i ? ", " : "Work plan: "));
+      const a = document.createElement("a"); a.href = "#session-" + s.n; a.textContent = "Session " + s.n;
+      u.sess.appendChild(a);
+    });
+  }
+}
+
+function slug(x) { return (x || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function sessionsFor(id) { return sessions.filter(s => (s.items || []).includes(id)); }
+
+function reveal(id) {
+  groupFilter = "all";
+  document.getElementById("sessFilter").value = "all";
+  document.getElementById("onlyOpen").checked = false;
+  applyFilters();
+  const el = document.getElementById("item-" + id);
+  if (el) el.scrollIntoView({ block: "start" });
+}
+
+function paintPlan() {
+  const box = document.getElementById("sessions"); box.textContent = "";
+  if (!sessions.length) { box.appendChild(h("p", "empty", "No work plan recorded yet.")); }
+  sessions.forEach(s => {
+    const row = h("div", "sess"); row.id = "session-" + s.n;
+    const top = h("div", "sess-top");
+    top.appendChild(h("span", "id", "Session " + s.n));
+    top.appendChild(h("h3", null, s.title || ""));
+    top.appendChild(h("span", "prio sstate " + slug(s.state), s.state || "planned"));
+    row.appendChild(top);
+    if (s.scope) row.appendChild(h("p", "body", s.scope));
+    const its = h("div", "sess-items");
+    (s.items || []).forEach(id => {
+      const a = h("a", "itemref", id); a.href = "#item-" + id;
+      a.dataset.state = slug((st[id] || {}).state);
+      if (st[id] && st[id].state) a.title = st[id].state;
+      a.addEventListener("click", e => { e.preventDefault(); reveal(id); });
+      its.appendChild(a);
+    });
+    row.appendChild(its);
+    if (s.note) row.appendChild(h("p", "suggest", s.note));
+    box.appendChild(row);
+  });
+  const sel = document.getElementById("sessFilter"); const keep = sel.value;
+  sel.textContent = "";
+  [{ v: "all", t: "All" }, ...sessions.map(s => ({ v: String(s.n), t: s.n + ": " + (s.title || "") }))].forEach(o => {
+    const op = document.createElement("option"); op.value = o.v; op.textContent = o.t; sel.appendChild(op);
+  });
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : "all";
+}
+
+function paintSummary() {
+  const counts = { accept: 0, modify: 0, reject: 0, discuss: 0 };
+  ITEMS.forEach(it => { const d = (fb[it.id] || {}).decision; if (d) counts[d]++; });
+  const decided = Object.values(counts).reduce((a, b) => a + b, 0);
+  const bar = document.getElementById("bar"); bar.textContent = "";
+  DECISIONS.forEach(d => { if (!counts[d.v]) return; const s = document.createElement("span"); s.style.width = (100 * counts[d.v] / ITEMS.length) + "%"; s.style.background = d.color; bar.appendChild(s); });
+  bar.setAttribute("aria-label", decided + " of " + ITEMS.length + " items decided");
+  const lg = document.getElementById("legend"); lg.textContent = "";
+  const tot = h("span"); const b = document.createElement("b"); b.textContent = decided + " / " + ITEMS.length; tot.appendChild(b); tot.appendChild(document.createTextNode(" decided")); lg.appendChild(tot);
+  DECISIONS.forEach(d => { const s = h("span"); const dot = h("span", "dot"); dot.style.background = d.color; s.appendChild(dot); s.appendChild(document.createTextNode(d.label + " " + counts[d.v])); lg.appendChild(s); });
+}
+
+function applyFilters() {
+  const only = document.getElementById("onlyOpen").checked;
+  const sv = document.getElementById("sessFilter").value;
+  const inSess = sv === "all" ? null : new Set((sessions.find(s => String(s.n) === sv) || {}).items || []);
+  document.querySelectorAll("#groupChips .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.g === groupFilter ? "true" : "false"));
+  document.querySelectorAll("section.group").forEach(sec => {
+    const showGroup = groupFilter === "all" || sec.dataset.g === groupFilter;
+    let any = false;
+    sec.querySelectorAll("article.item").forEach(a => {
+      const open = !(fb[a.dataset.id] || {}).decision;
+      const show = showGroup && (!only || open) && (!inSess || inSess.has(a.dataset.id));
+      a.hidden = !show; any = any || show;
+    });
+    sec.hidden = !any;
+  });
+}
+
+function setWritable(on) {
+  writable = on;
+  Object.values(ui).forEach(u => { u.btns.forEach(b => b.disabled = !on); u.note.disabled = !on; });
+}
+function banner(msg) { const b = document.getElementById("banner"); if (msg) { b.hidden = false; b.textContent = msg; } else b.hidden = true; }
+
+build(); paintSummary();
+ui._general.note.disabled = true;
+
+(async () => {
+  try { db = window.claude ? await window.claude.use("db") : null; } catch (e) { db = null; }
+  if (!db) { banner("Responses can't be saved or shown in this view. Open the page on claude.ai while signed in to record decisions."); return; }
+  banner(null); setWritable(true);
+  db.collection("feedback").onSnapshot(snap => {
+    snap.docs.forEach(d => { if (d.exists) fb[d.id] = { ...d.data() }; });
+    Object.keys(ui).forEach(paintItem); paintSummary(); applyFilters();
+  }, e => banner("Live updates stopped (" + e.code + "). Reload the page to reconnect."));
+  db.collection("status").onSnapshot(snap => {
+    snap.docs.forEach(d => { if (d.exists) st[d.id] = { ...d.data() }; });
+    Object.keys(ui).forEach(paintItem); paintPlan();
+  }, () => {});
+  db.collection("sessions").onSnapshot(snap => {
+    sessions = snap.docs.filter(d => d.exists).map(d => ({ ...d.data() })).sort((a, b) => (a.n ?? 99) - (b.n ?? 99));
+    paintPlan(); Object.keys(ui).forEach(paintItem); applyFilters();
+  }, () => {});
+})();
+</script>
