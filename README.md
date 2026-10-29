@@ -22,6 +22,8 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 
 - `/new-analysis-plan` and `/new-analysis-implement`: think of these as "Plan mode for long-running projects" (days, weeks, months). These break up a large project into chunks, maintaining state across chunks through an explicit handoff file format.
 - `/write-methods`: while this can be used to generate the methods section for a paper, its primary purpose is to help the user understand the details of an analysis performed during a live session by the agent. Usage example: `> /write-methods, focusing on the analysis involving three categories, ...` Installing [pandoc](https://pandoc.org/) and one or more backends (e.g., Word, LaTeX, etc.) is highly recommended. 
+- `/writing-manuscripts`: style guide when drafting manuscript-grade prose. While this skill helps, agents "think" very differently from humans, and their prose still needs a lot of manual polishing or outright replacement.
+- `/polish-manuscripts`: consistency checks on a manuscript.
 
 #### Tools for coding and package maintenance
 
@@ -41,8 +43,10 @@ Focused maintenance tools:
 
 - `/fix-issue`: resolve an issue reported on the issue-tracker
 - `/update-compat`: used when a dependency releases a new breaking version
+- `/registry-versions`: list the registered versions of a package (via Pkg's registry API)
 - `/freshen-docstrings`: polish the "docstrings" for methods, types, and constants in a package
 - `/freshen-docs`: polish the README and/or [Documenter](https://documenter.juliadocs.org/stable/) documentation
+- `/plain-prose`: rewrite docstrings, comments, and docs in plain language that describes what the code does now, removing history, planning narrative, and jargon
 - `/freshen-coverage`: improve [test-coverage](https://en.wikipedia.org/wiki/Code_coverage)
 - `/freshen-aqua`: add [Aqua](https://github.com/JuliaTesting/Aqua.jl) tests to a package (enforce certain mechanical aspects of "engineering quality")
 - `/freshen-explicit-imports`: add [ExplicitImports](https://github.com/JuliaTesting/ExplicitImports.jl) as a test-dependency (more "engineering quality")
