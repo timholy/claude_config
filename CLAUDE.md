@@ -10,16 +10,6 @@
   continue." I want to know when unexpected things happen so that I can inspect
   them and understand the underlying causes.
 
-# Usage policy
-
-- When Fable is the active model, minimize "credit" usage. Delegate routine work
-  to other models unless delegation would cost more in Fable-credits than just
-  doing it. MCP-session work is OK, but remember it can expose unanticipated
-  nuances and pursuing them can prove expensive; it may be cheaper (in
-  Fable-credits) to delegate that and work from subagent summaries. I value
-  Fable more for strategic decisions and creative problem-solving than for
-  implementation details.
-
 # Julia versions
 
 - `julia` uses the current release
