@@ -35,6 +35,7 @@ Required packages (installed in your *global* environment):
 Interactive tools:
 
 - `/profile-performance`: teach an agent in the running session the finer points of performance analysis
+- `/graphical-display`: choose an interactive window or headless output before loading a plotting/GUI backend (mostly agent-triggered)
 
 Focused maintenance tools:
 

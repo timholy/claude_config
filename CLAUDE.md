@@ -48,39 +48,6 @@
 
 - Use `Pkg.test()` for a final run only when ready to submit a pull request.
 
-# Graphical display (Makie, Gtk, Qt, …)
-
-Decide **at session start**, before loading any plotting backend, whether the
-work is interactive or headless. Switching later requires reloading the
-backend, and restarting the session to switch discards accumulated state
-(loaded packages, data, open figures).
-
-Check what's available first:
-
-    get(ENV, "DISPLAY", "")   # ":0" => a real monitor is available (e.g. WSLg)
-
-- **Interactive (default for analysis/exploration).** When a real display is
-  present, the MCP session inherits it automatically — do *not* override
-  `DISPLAY`:
-
-      using GLMakie; GLMakie.activate!()
-      display(fig)   # live window on the monitor; persists/updates across eval calls
-
-- **Headless (CI-like batch, final `Pkg.test()`, profiling, or no real
-  display).** Either render to files with a non-interactive backend
-  (CairoMakie → PNG/SVG), or start a virtual display once and point the session
-  at it *before* loading the backend:
-
-      # Bash: Xvfb :99 -screen 0 1024x768x24 &
-      ENV["DISPLAY"] = ":99"
-
-  Fall back to `xvfb-run julia ...` via Bash only for final `Pkg.test()` runs or
-  when the MCP session cannot be reconfigured.
-
-Only spin up Xvfb when no real display is present or you explicitly want
-headless output — on a desktop session the inherited `:0` already shows
-figures on the monitor.
-
 # Julia packages
 
 - Use the local `Project.toml` environment when available. Revise, TestEnv,
