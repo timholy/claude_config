@@ -92,6 +92,9 @@ description: This skill is a "style guide" for contributing to publication-quali
 
 - In single-author manuscripts, avoid the "authorial we." Other forms of "we"
   (author-reader, community, etc.) are acceptable.
+
+- If drafting LaTeX, don't wrap at fixed width. If the goal is to limit the size
+  of future diffs, use breaks between sentences instead.
  
 - Do not mix analysis or writing code with writing prose: experience shows that
   when those two are mixed in the same session, prose quality falls off a cliff.
