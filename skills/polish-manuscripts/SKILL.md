@@ -46,7 +46,8 @@ Useful context includes things to watch for in particular (a term the author sus
 is overloaded, a section known to be weak), the audience and venue, material that is
 deliberately out of scope, where commits go (e.g. a branch kept until the author
 decides to merge), and related manuscripts: companion drafts that share notation,
-cite results from this one, or receive material moved out of it. For each related
+cite results from this one, or receive material moved out of it, and software
+packages that implement the paper's methods. For each related
 draft, note its path, the version to read, and what it shares with this one. The
 version matters: the current text of a related draft may be on a branch or in a
 separate worktree, and its project memory usually says which; ask if it does not.
@@ -72,7 +73,11 @@ When there are related drafts, add a **Cross-manuscript (X)** question to the su
 are shared symbols and terms used the same way in both? Are results cited from the
 other draft stated the way that draft states them? Does material this review proposes
 to move out of this manuscript have a place in the other? Do references into the
-other draft still point to the right place?
+other draft still point to the right place? When a software package implements the
+paper, ask the same naming question of it: compare the package's names for the main
+objects (exported functions and types, docstrings, README) with the manuscript's. A
+reader who moves between the two should not have to translate. Differences go on the
+page as X items; whether the paper or the package changes is the author's decision.
 
 Start with the cheap, mechanical checks; they find most of the problems in a few
 commands:
@@ -100,24 +105,71 @@ The survey is analysis only. Do not edit the manuscript during it.
    whether the `.tex` files have uncommitted changes. Every line number in the review
    refers to that state, so the page must say which commit it is. Also record the
    commit of each related draft that was read; X findings depend on it.
-2. **Read the whole main text,** including `\input`/`\include`d sections. Large files
-   may need to be read in ranges. If parts are only skimmed (appendices, supplements),
-   say exactly which parts in the report; the author needs to know what the review did
-   not cover. For a long manuscript, especially one with related drafts to read as
-   well, the survey may be delegated to a subagent that follows this phase and
-   returns its findings. Before discussing a high-priority finding with the author,
-   read the passage behind it yourself.
-3. **Assess the author's questions first,** then the default questions below unless
+2. **Take the inventory.** Run
+   `python3 ~/.claude/skills/polish-manuscripts/scripts/manuscript_inventory.py paper.tex > inventory.md`
+   (in the scratchpad). It prints four tables: the size of every (sub)section (words,
+   displayed equations, formal results, proofs); labels that are cited nowhere or only
+   inside their own subsection; every symbol family used in more than one form (`a`,
+   `bold a`, `check a`); and each index letter with the symbols it indexes. The tables
+   are leads, not findings: an uncited equation may be fine, and `bold a` beside `a` is
+   usually one concept. Each section pass below uses them.
+3. **Read the whole main text in two passes,** including `\input`/`\include`d
+   sections. If parts are only skimmed (appendices, supplements), say exactly which
+   parts in the report; the author needs to know what the review did not cover.
+   - The **whole-text pass** answers the questions that compare distant parts of the
+     manuscript: N, W, F, C, G, X, and O. Most of these start from grep counts.
+   - The **section pass** reads one top-level section at a time and answers T, D, and
+     R for it, plus N for collisions within the section. For each section, write
+     down: its job in one sentence; the choice or tradeoff it is organized around, if
+     any; its blocks (definitions, lemmas,
+     theorems, proofs, worked examples, interpretive paragraphs), each with where
+     later text uses it (the label table helps); and a verdict on its opening and on
+     each subsection's opening by the style guide's test (stakes, what it settles,
+     what the answer hinges on). Record a verdict for every opening, so none is
+     skipped.
+
+     For the introduction, record instead: the problem; each prior approach it names
+     and why that approach falls short; for each shortcoming, the sentence that says
+     how this paper answers it (or "none"); and for each item in a list of
+     contributions, its one concept, the problem it solves, and what was proved or
+     found. File items for a shortcoming the paper never answers, for prior
+     approaches whose failures come only after the paper's own method has been
+     introduced, and for contribution items that describe mechanism (parameter
+     values, iteration details, citations of theorems) instead of a result, that
+     share a concept with another item, or that report no finding.
+
+   For a long manuscript, delegate the section pass to subagents, one per top-level
+   section, run in parallel. Give each the manuscript path, the line ranges of its
+   section, the introduction, and the notation table, the style guide, and the output
+   of the inventory script run with `--section N`. Ask it to return the per-section
+   record above and its T, D, R, and N findings, and to edit nothing. The whole-text
+   pass may also be delegated, especially with related drafts to read. Before
+   discussing a high-priority finding with the author, read the passage behind it
+   yourself.
+4. **Assess the author's questions first,** then the default questions below unless
    the author says otherwise. Add any questions the author raises mid-survey. A
    default question with no findings is reported as "none" and gets no group on the
    page.
    - **Titles (T):** does each section title describe its content? Look for
      subsections that do not fit under their parent, `\paragraph`s that are cited as
-     if they were numbered sections, and opening paragraphs that promise results
-     delivered elsewhere.
-   - **Detail (D):** is the level of detail balanced across sections? Implementation
-     detail (solver back-ends, storage budgets, stall rules) may belong in an
-     appendix or the software documentation.
+     if they were numbered sections, opening paragraphs that promise results
+     delivered elsewhere, and openings that list the subsections instead of giving
+     the stakes. The section pass records a verdict on every opening; file a T item
+     for each one that fails.
+   - **Detail (D):** for each block of a section, what does the reader need *at this
+     point* to follow what comes next? When later text uses only a block's
+     conclusion, the main text can state the conclusion with a pointer, and the
+     derivation can go to an appendix. This applies to theory (a lemma, its proof, a
+     statistical interpretation) as much as to implementation detail (solver
+     back-ends, storage budgets, stall rules, which may belong in the software
+     documentation). Watch especially for asides that relate a concept to its
+     neighbors: how it differs from a related construction, an interpretation from
+     another field, other powers or members of the same family. Each may be correct,
+     but together they can outweigh the material the section exists to present. They
+     accumulate in drafts that have been revised many times. Compare each
+     subsection's size in the inventory with its role in the main line; a subsection
+     about a secondary construction that is the longest in its section, or the only
+     one with a theorem and proof, is a lead.
    - **Results (F):** results prose should defer to the figures. Flag passages that
      narrate what a figure already shows (medians, values for individual points,
      play-by-play), and places where the prose carries something a figure should
@@ -131,10 +183,47 @@ The survey is analysis only. Do not edit the manuscript during it.
      meanings occur close together, and symbols that conflict with a standard
      meaning this manuscript's content makes likely to come to mind (e.g., in a
      manuscript about eigenvalues, ρ for anything other than the spectral radius
-     risks misinterpretation; in other manuscripts ρ may be free). Grep each
-     suspect symbol and count its uses.
+     risks misinterpretation; in other manuscripts ρ may be free). Treat a symbol as
+     a *family*: the base letter with every decoration (`\check a`, `\tilde a`,
+     `\bar a`, bold, calligraphic), the index letters attached to it, and the word
+     the prose uses for it. A decoration does not keep two meanings apart for a
+     reader who meets `\check a_v` two lines after `a_k`. Check in particular:
+     - a decorated form of a central symbol used for an unrelated quantity (an
+       accumulator written `\check a` beside the cover factor `\bfa`);
+     - one index letter ranging over two sets, especially in the same formula or
+       paragraph (`k` for outputs in `J_{kj}` and for tape nodes in `v_k`);
+     - a symbol's prose name that is also another symbol's name ("output weights"
+       for `\bfa` beside the weight matrix `\bfW`);
+     - one letter for two kinds of quantity across sections (`L` for a node count
+       and for a cost);
+     - a notation table out of step with the text: symbols used in several sections
+       but missing from it, entries whose wording differs from the definition, and
+       rows that use a symbol defined only in a later row.
+
+     Work from the inventory's family and index tables rather than from a list of
+     suspects, then grep the candidates and count their uses.
    - **Terms (W):** one concept under several names, or one name for several
-     concepts. Count the variants with grep; numbers make the case concrete.
+     concepts. Count the variants with grep; numbers make the case concrete. One
+     name for several concepts includes a name used both for an object and for its
+     factors or parameters ("cover" for the factor `\bfh` as well as for the product
+     `\bfh\bfh^T`), and category slips that equate two different kinds of thing
+     ("this scaling is the minimal cover"). Also list each term the manuscript
+     coins (usually introduced with `\emph`) with its use count. A coinage used only
+     a handful of times, or one the text reads as well without, is a candidate for
+     removal: the style guide prefers established terms to invented ones.
+   - **Redundancy and consolidation (R):** name the choice or tradeoff each section
+     is organized around (e.g., work versus tightness of a bound). Then look for:
+     options for that one choice spread across several subsections, when one place
+     could lay them out along a single axis; a construction developed inside a
+     special case although it holds in general (a grouping of outputs introduced
+     only for one matrix when it applies to all); a definition, result, or scope
+     statement made twice (often once in the introduction and again in the setup);
+     and generalizations, families, or interpretations that no later text uses. The
+     inventory's label table finds the last kind: a displayed result that is cited
+     nowhere, or only inside its own subsection, needs a reason to stay in the main
+     text.
+     A consolidation usually shortens the section and sharpens its opening, so
+     propose the new outline, not just the cut.
    - **Ordering (O):** concepts used before they are introduced. An implicit
      dependence, one the reader cannot resolve at the point of use, is a defect. An
      explicit forward reference ("proved in §5, Theorem 3") or a cited appendix
@@ -143,6 +232,17 @@ The survey is analysis only. Do not edit the manuscript during it.
      what the current order does for the reader: motivation often comes before
      machinery for good reason, and rewording a promise ("§5 shows when…") is usually
      better than moving theory forward.
+   - **Claims (C):** does each restatement of a result keep the result's hypotheses
+     and scope? Results are restated far from where they are proved or measured: in
+     the abstract, the list of contributions, the notation table, section openings,
+     the discussion, and the limitations. Compare each restatement with the theorem
+     or measurement it summarizes, and flag a dropped condition (a coverage
+     guarantee stated without the conditions on the atoms), a strengthened
+     quantifier ("uniquely" for a result with exceptions on a set of measure zero,
+     "always" for "on most test problems"), and a cost or complexity claim that the
+     analysis does not support (working memory stated as at least n² where it is
+     O(n) per live node). Restatements drift as the theorems are revised, so the
+     early summaries are the likeliest to be out of date.
    - **Figure styling (G):** does each concept (a method, a cover, a test set, a
      reference value) keep the same color, marker, line style, and legend label in
      every figure? Do legend and axis labels use the same terms as the prose? Does
@@ -151,9 +251,19 @@ The survey is analysis only. Do not edit the manuscript during it.
      same way in both. This is analysis: it means reading the plotting scripts and
      looking at the figure files. Delegate it to a subagent (see "Figure-styling
      check" below) and work from the table it returns.
-4. **Rate by cost to the reader,** not by the size of the edit. Anything that breaks
-   the build (a dangling label, a stale input path) is high regardless.
-5. **Report in the terminal.** Group the report by question, most important first
+5. **Rate by cost to the reader,** not by the size of the edit. Anything that breaks
+   the build (a dangling label, a stale input path) is high regardless. Problems in
+   the early method sections cost more than the same problems later, because every
+   later section is read through them.
+6. **Check coverage.** Count the T, D, R, and O findings for each top-level section
+   and set the counts beside the section sizes from the inventory. A long section
+   with none of these findings gets a second section pass by a fresh reader (a
+   subagent given only that section and the materials listed above). The
+   introduction and the setup or notation section always count as long: every
+   reader passes through them, and an empty count there is a lead, not a pass.
+   Report the table, and say which sections had a second pass and what it found,
+   even if it found nothing.
+7. **Report in the terminal.** Group the report by question, most important first
    within each group. For each finding give the location (`file.tex:123`), what is
    wrong, and a concrete suggestion. Mark related findings so the author can see
    which ones go together. End with what was not read and the open questions for the
@@ -187,6 +297,18 @@ it when the author agrees.
 6. Save a project memory note (type `reference`) with the URL, the commit the line
    numbers refer to, the item ID ranges, the database layout below, and a link to the
    manuscript context note. Add it to `MEMORY.md`.
+
+### Adding items
+
+Later sessions and the final sweep add items as they find them. The spec file from
+step 2 does not survive the session that wrote it, but the page carries its contents:
+`GROUPS` and `ITEMS` in the page source are JSON literals, and the header holds the
+eyebrow and lede. Read the page source, rebuild the spec from it, append the new items
+with the next free ID in their group (adding a group if needed), rebuild, and
+republish to the same page. In each new item's `b`, give the commit its line numbers
+refer to when it differs from the baseline. Count the documents in `feedback` and
+`status` before and after republishing, and stop if they differ: the database must
+survive the republish. Tell the author which items are new.
 
 ### Database layout
 
@@ -241,8 +363,23 @@ Group the accepted items into sessions:
   changes the plotting scripts, ideally so that every script takes each concept's
   style from one shared definition. It ends with the list of figures to regenerate
   and the captions or sentences that mention a style, which go to a writing session.
-- **A final sweep:** consistency of terms and symbols across the whole text, a clean
-  compile, and the list of figures to regenerate.
+- **A final sweep:** consistency of terms and symbols across the whole text (rerun
+  the inventory script and compare its family and index tables with the baseline's),
+  a clean compile, the list of figures to regenerate, and a harvest of the author's
+  own edits (below).
+
+### Harvesting the author's edits
+
+Edits the author makes by hand during the review are the best evidence of what the
+review missed. In the final sweep, and whenever the author mentions having polished a
+section themselves, list the commits since the baseline that the author made by hand
+(no `Assisted-by` trailer; ask if that is unclear) and read their diffs. Classify
+each substantive change by the question that should have found it (T, D, F, N, W, R,
+O, C, G, X). For each class of change the review missed, say which check would have
+caught it: an existing question applied more thoroughly, a sharper wording of one, or
+something new. Then propose an edit to this skill. Do not edit the skill without the
+author's approval. Report the classification even when every change falls under
+existing questions; repeated misses under one question mean its wording needs work.
 
 Write each session to `sessions/s<N>`, explain the plan to the author, and update the
 memory note with the session list and order.
@@ -256,32 +393,41 @@ memory note with the session list and order.
 2. **Read before writing.** Read the style guide, the sections being changed, and
    every section they depend on. Grep each symbol or term before introducing it, to
    avoid collisions.
-3. **Proposals first when the item calls for it.** For items marked `discuss` or
+3. **Re-review what you are about to rewrite.** A session reads a section more
+   closely than the survey did, so it is the best chance to catch what the survey
+   missed. Before editing, do the section pass of Phase 1 on every (sub)section the
+   session will change, all of it, not only the passages the items name: rerun the
+   inventory script with `--section N` and answer T, D, R, and N. Check
+   whether the session's items, once done, leave the section's organizing choice
+   presented in one place and its opening giving the stakes. File what you find as
+   new items (see "Adding items" in Phase 2) and raise them with the author before
+   acting on them. Fold a new item into the session only when the author agrees.
+4. **Proposals first when the item calls for it.** For items marked `discuss` or
    `modify`, or with an open question in the note, propose and wait for the author's
    answer before editing. For each proposal give a recommendation, an alternative if
    there is a reasonable one, and the counts or locations it rests on. A table works
    well for symbol renames.
-4. **Renames.** Count the uses and separate the named uses from generic uses of the
+5. **Renames.** Count the uses and separate the named uses from generic uses of the
    same word ("a covariant start" may be a generic use even if "covariant start" is
    being renamed). Check figure titles, axis labels, legends, and the scripts that
    generate the figures. List the figures that need to be regenerated, since changing
    a script does not change the existing PDF.
-5. **Code changes.** If a rename reaches a software package (an option name, a
+6. **Code changes.** If a rename reaches a software package (an option name, a
    keyword), write a handoff file (markdown) in the package's repository, or
    (for small changes) delegate that change to a subagent on a branch in the
    package's repository. Anything that may require interaction with the user
    should be handled via the handoff file.
-6. **Revise before showing.** Draft first, then make a separate sentence-by-sentence
+7. **Revise before showing.** Draft first, then make a separate sentence-by-sentence
    pass against the style guide before showing any new paragraph. Prose shown inside
    a proposal is still read as prose.
-7. **Compile and check.** Build the manuscript (e.g. `latexmk`) and confirm there are
+8. **Compile and check.** Build the manuscript (e.g. `latexmk`) and confirm there are
    no errors and no undefined references or citations. Then grep for leftovers of
    anything renamed.
-8. **Commit only your own changes.** The author may have uncommitted work in the same
+9. **Commit only your own changes.** The author may have uncommitted work in the same
    files: stage only your hunks (`git add -p`, or apply a patch of just your lines to
    the index). Ask once per review where commits go (e.g. manuscript on `main`, package
    on a branch) and record the answer in the memory note.
-9. **Close the session.** Write `status/<id>` for each finished item (with the commit
+10. **Close the session.** Write `status/<id>` for each finished item (with the commit
    hash), set the session to `done` with a note that says what remains, and put
    anything the next session must do first into that session's `note`. Then give the
    author the prompt for the next session, ready to paste, e.g.
