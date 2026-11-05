@@ -24,6 +24,7 @@ For me, this repo is my `~/.claude` folder with a lot of required material `git-
 - `/write-methods`: while this can be used to generate the methods section for a paper, its primary purpose is to help the user understand the details of an analysis performed during a live session by the agent. Usage example: `> /write-methods, focusing on the analysis involving three categories, ...` Installing [pandoc](https://pandoc.org/) and one or more backends (e.g., Word, LaTeX, etc.) is highly recommended. 
 - `/writing-manuscripts`: style guide when drafting manuscript-grade prose. While this skill helps, agents "think" very differently from humans, and their prose still needs a lot of manual polishing or outright replacement.
 - `/polish-manuscripts`: consistency checks on a manuscript.
+- `/manuscript-benchmarks`: design, build, and rerun the benchmark suite for a paper introducing a new computational method. It assumes the benchmarks will be rerun many times as the method changes. It records provenance for every result without ever blocking a run, keeps a cheap tier for quick iteration, and draws figures and generates manuscript numbers that update with each rerun.
 
 #### Tools for coding and package maintenance
 
