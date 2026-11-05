@@ -31,6 +31,11 @@ description: This skill is a "style guide" for contributing to publication-quali
      anything new.
   7. Ensure that the relative emphases of the substance coincide with the
      relative expectations for emphasis raised by the structure.
+  8. Arguments should flow from one sentence to the next: the new information
+     should frequently transition to the old information of the next sentence.
+     This point can be inadvertently violated by targeted edits. After making
+     such edits, reread the passage as a whole to ensure that the argument flows
+     smoothly from one sentence to the next.
 
   These are expectations, not rules: skilled writers violate them to good
   effect, but only because they fulfill them most of the time.
@@ -47,10 +52,11 @@ description: This skill is a "style guide" for contributing to publication-quali
   details, but not the reverse. In some cases, a brief illustration, concrete
   example, illuminating counterfactual, or analogy can help build that intuition.
 
-  A reader who stops after the opening paragraph should be able to say
-  what the section will settle, why it is not trivially settled, and what the
-  answer will hinge on. A rhetorical question with no stakes attached may not
-  meet this standard.
+  A reader who stops after the opening paragraph should be able to say what
+  questions or challenges the section will settle, why it is not trivially
+  settled, and what the answer will hinge on. A rhetorical question with no
+  stakes attached may not meet this standard. It should not read like an
+  abstract or table of contents for the section.
 
   An opening is not a table of contents. Give the stakes and the few key terms
   the reader should watch for; leave out roadmaps of every subsection and terms
@@ -68,12 +74,21 @@ description: This skill is a "style guide" for contributing to publication-quali
   in most cases it's better to say that an algorithm depends on its inputs,
   not that it *reads* its inputs.
 
+  Invented jargon should not substitute for a clearly-stated antecedent.
+
 - When reporting results, use the appropriate tense: mathematical results *are*
   true, but experiments *were* performed in lab, on particular benchmarks, or on
   machines with specific roundoff characteristics. The more a result depends on
   arbitrary choices or factors that might not be exactly reproducible for all
   readers or in all circumstances, the greater the incentive to report in
   past-tense.
+
+  State findings as what the measurements showed on the populations tested
+  ("these measurements favored assembly when a coloring was cheap"), not as
+  rules ("assembly is cheaper"). Write a universal only when a theorem or one
+  can be reasonably confident that the finding generalizes beyond the tested
+  examples. Guidance may recommend, but each recommendation carries the scope of
+  its evidence.
 
 - Avoid the temptation to describe every result, particularly numerical ones,
   in prose: figures or tables are generally the preferred format for most
@@ -92,6 +107,12 @@ description: This skill is a "style guide" for contributing to publication-quali
 
 - In single-author manuscripts, avoid the "authorial we." Other forms of "we"
   (author-reader, community, etc.) are acceptable.
+
+- Shortening means removing words, not content. A length target never justifies
+  dropping the reason a mechanism exists, the only example of a case, a purpose
+  clause, or a qualifier. If the target cannot be met without these, say so
+  instead. When editing agentic writing, reducing needless repetition is often
+  an easy way to shorten the overall text.
 
 - If drafting LaTeX, don't wrap at fixed width. If the goal is to limit the size
   of future diffs, use breaks between sentences instead.
