@@ -43,6 +43,7 @@ Design tests to cover the gaps. Keep in mind:
 - `@test_throws` should test the user-visible error message, not just the error type
 - Printing tests should not be sensitive to whitespace changes
 - Add `@inferred` for results used in performance-critical settings
+- The purpose of tests is to make development more robust. Avoid tests that would make future development more brittle.
 
 **Wait for user approval before writing any tests.**
 
