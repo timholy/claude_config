@@ -79,8 +79,14 @@ objects (exported functions and types, docstrings, README) with the manuscript's
 reader who moves between the two should not have to translate. Differences go on the
 page as X items; whether the paper or the package changes is the author's decision.
 
-Start with the cheap, mechanical checks; they find most of the problems in a few
-commands:
+Build a construction table first, delegated to a subagent that reads both drafts. List
+one row for every construction both drafts define: definitions, named quantities,
+normalizations, conventions such as the direction of a rescaling, and starting
+procedures with their parameters. Give each row's symbol, index letters, term, and
+location in each draft. Every difference is an X item. Comparing labels and terms alone misses differing notation.
+
+Then run the mechanical checks, which catch stale references rather than differing
+notation:
 
 - grep this manuscript for each old name the related review renamed (its `status`
   notes say what changed, and to what);
@@ -89,8 +95,8 @@ commands:
   current version. Also check which copy of the related draft the build actually
   reads; it may be a stale checkout.
 
-Then read the parts of the related draft that bear on the remaining questions, and
-say which parts were read. Edits to a related draft are out of scope unless the
+Read the parts of the related draft that bear on the remaining questions, and say
+which parts were read. Edits to a related draft are out of scope unless the
 author asks for them; list them as items so the author can decide.
 
 A rename this manuscript has not yet adopted from the related draft is an X item. A
@@ -114,19 +120,25 @@ The survey is analysis only. Do not edit the manuscript during it.
    are leads, not findings: an uncited equation may be fine, and `bold a` beside `a` is
    usually one concept. Each section pass below uses them.
 3. **Read the whole main text in two passes,** including `\input`/`\include`d
-   sections. If parts are only skimmed (appendices, supplements), say exactly which
-   parts in the report; the author needs to know what the review did not cover.
+   sections. Record, for each top-level section and each appendix, whether it was
+   read sentence by sentence or only for structure, and put that table in the page's
+   lede: the author needs to know what the review did not cover. The final sweep
+   reads every part that neither the survey nor any session read sentence by
+   sentence.
    - The **whole-text pass** answers the questions that compare distant parts of the
-     manuscript: N, W, F, C, G, X, and O. Most of these start from grep counts.
+     manuscript: N, W, F, C, B, G, X, and O. Most of these start from grep counts.
    - The **section pass** reads one top-level section at a time and answers T, D, and
      R for it, plus N for collisions within the section. For each section, write
      down: its job in one sentence; the choice or tradeoff it is organized around, if
      any; its blocks (definitions, lemmas,
      theorems, proofs, worked examples, interpretive paragraphs), each with where
-     later text uses it (the label table helps); and a verdict on its opening and on
-     each subsection's opening by the style guide's test (stakes, what it settles,
-     what the answer hinges on). Record a verdict for every opening, so none is
-     skipped.
+     later text uses it (the label table helps); and a verdict on the opening of the
+     section, of every subsection (experiment subsections included), and of every
+     appendix and appendix subsection, by the style guide's test. Record a verdict
+     for every opening, so none is skipped. An opening fails when:
+     - its first subject is not something the reader already holds;
+     - it uses term(s) not yet defined in a manner that assumes familiarity;
+     - it reads more like an abstract or table of contents than a conceptual orientation.
 
      For the introduction, record instead: the problem; each prior approach it names
      and why that approach falls short; for each shortcoming, the sentence that says
@@ -136,13 +148,17 @@ The survey is analysis only. Do not edit the manuscript during it.
      approaches whose failures come only after the paper's own method has been
      introduced, and for contribution items that describe mechanism (parameter
      values, iteration details, citations of theorems) instead of a result, that
-     share a concept with another item, or that report no finding.
+     share a concept with another item, or that report no finding. For each
+     shortcoming attributed to a prior approach, also record the experiment that
+     measures it on the paper's own use, against the cheapest variant cited (see
+     the B question).
 
    For a long manuscript, delegate the section pass to subagents, one per top-level
    section, run in parallel. Give each the manuscript path, the line ranges of its
    section, the introduction, and the notation table, the style guide, and the output
    of the inventory script run with `--section N`. Ask it to return the per-section
-   record above and its T, D, R, and N findings, and to edit nothing. The whole-text
+   record above, the opening verdicts, the line-of-argument and sentence-level
+   findings, and its T, D, R, and N findings, and to edit nothing. The whole-text
    pass may also be delegated, especially with related drafts to read. Before
    discussing a high-priority finding with the author, read the passage behind it
    yourself.
@@ -154,8 +170,11 @@ The survey is analysis only. Do not edit the manuscript during it.
      subsections that do not fit under their parent, `\paragraph`s that are cited as
      if they were numbered sections, opening paragraphs that promise results
      delivered elsewhere, and openings that list the subsections instead of giving
-     the stakes. The section pass records a verdict on every opening; file a T item
-     for each one that fails.
+     the stakes. The section pass records a verdict on every opening. File one T item
+     per top-level section that lists its failing openings, for a decision on the
+     batch ("rewrite these"); the author judges the rewritten openings in the text. A
+     separate T item is needed only when the fix changes structure, such as moving or
+     splitting a subsection.
    - **Detail (D):** for each block of a section, what does the reader need *at this
      point* to follow what comes next? When later text uses only a block's
      conclusion, the main text can state the conclusion with a pointer, and the
@@ -179,6 +198,17 @@ The survey is analysis only. Do not edit the manuscript during it.
      tight a bound is. Note any such question the paper raises but does not test.
      Count the numbers in each results subsection; the counts make the case
      concrete.
+   - **Baselines (B):** list every prior method the manuscript names as an
+     alternative (in the introduction, Related work, and any comparison table), with
+     its cost class and what it returns. Mark each method that the introduction
+     presents as the approach the paper improves on, or that costs about the same as
+     the paper's method. Each marked method may need an experiment that compares it
+     with the paper's method:
+     - on the paper's own measure, not on a property the paper's method also lacks;
+     - at matched cost;
+     - scored by the same rule as the paper's method and the sibling baselines.
+
+     A marked method without such an experiment is likely to be a high-priority item.
    - **Notation (N):** symbols with more than one meaning, especially when the
      meanings occur close together, and symbols that conflict with a standard
      meaning this manuscript's content makes likely to come to mind (e.g., in a
@@ -204,10 +234,8 @@ The survey is analysis only. Do not edit the manuscript during it.
      suspects, then grep the candidates and count their uses.
    - **Terms (W):** one concept under several names, or one name for several
      concepts. Count the variants with grep; numbers make the case concrete. One
-     name for several concepts includes a name used both for an object and for its
-     factors or parameters ("cover" for the factor `\bfh` as well as for the product
-     `\bfh\bfh^T`), and category slips that equate two different kinds of thing
-     ("this scaling is the minimal cover"). Also list each term the manuscript
+     name for several concepts includes implicit equivalences that carry some risk (e.g., equating `a*b` and `a, b` when `a` and `b` are not separately identifiable). Also list
+     each term the manuscript
      coins (usually introduced with `\emph`) with its use count. A coinage used only
      a handful of times, or one the text reads as well without, is a candidate for
      removal: the style guide prefers established terms to invented ones.
@@ -232,17 +260,29 @@ The survey is analysis only. Do not edit the manuscript during it.
      what the current order does for the reader: motivation often comes before
      machinery for good reason, and rewording a promise ("§5 shows when…") is usually
      better than moving theory forward.
-   - **Claims (C):** does each restatement of a result keep the result's hypotheses
-     and scope? Results are restated far from where they are proved or measured: in
-     the abstract, the list of contributions, the notation table, section openings,
-     the discussion, and the limitations. Compare each restatement with the theorem
-     or measurement it summarizes, and flag a dropped condition (a coverage
-     guarantee stated without the conditions on the atoms), a strengthened
-     quantifier ("uniquely" for a result with exceptions on a set of measure zero,
-     "always" for "on most test problems"), and a cost or complexity claim that the
-     analysis does not support (working memory stated as at least n² where it is
-     O(n) per live node). Restatements drift as the theorems are revised, so the
-     early summaries are the likeliest to be out of date.
+   - **Claims (C):** does every claim carry the hypotheses and scope of the theorem
+     or measurement behind it? Results are restated far from where they are proved
+     or measured: in the abstract, the list of contributions, the notation table,
+     section openings, the discussion, and the limitations. Restatements drift as
+     results are revised, so the early summaries are the likeliest to be out of
+     date. But claims also lose their scope outside restatements, so check:
+     - definitional and method prose;
+     - results paragraphs, the Discussion, and practical guidance;
+     - claims about prior work and alternatives;
+     - table cells, captions, and the suggestions on the review page itself.
+
+     First write core results' dependencies as a list. Then grep every reference to
+     it and every sentence that uses its key phrase (for a scale-invariance paper,
+     `transform with the units|covarian|independent of units|commutes with`), and
+     compare. Flag:
+     - a dropped condition (a coverage guarantee stated without the conditions on
+       the atoms; a positivity or nonzero condition; "at convergence");
+     - a strengthened quantifier ("uniquely" for a result with exceptions on a set
+       of measure zero, "always" for "on most test problems"), and "can" or "may"
+       that has become "is";
+     - a cost or complexity claim that the analysis does not support (working
+       memory stated as at least n² where it is O(n) per live node).
+
    - **Figure styling (G):** does each concept (a method, a cover, a test set, a
      reference value) keep the same color, marker, line style, and legend label in
      every figure? Do legend and axis labels use the same terms as the prose? Does
@@ -251,6 +291,10 @@ The survey is analysis only. Do not edit the manuscript during it.
      same way in both. This is analysis: it means reading the plotting scripts and
      looking at the figure files. Delegate it to a subagent (see "Figure-styling
      check" below) and work from the table it returns.
+   - **Sentences and flow (S):** the section pass's line-of-argument and
+     sentence-level findings. File one S item per top-level section, giving the
+     counts and representative lines, with the decision "fix all in the session that
+     rewrites the section".
 5. **Rate by cost to the reader,** not by the size of the edit. Anything that breaks
    the build (a dangling label, a stale input path) is high regardless. Problems in
    the early method sections cost more than the same problems later, because every
@@ -265,7 +309,10 @@ The survey is analysis only. Do not edit the manuscript during it.
    even if it found nothing.
 7. **Report in the terminal.** Group the report by question, most important first
    within each group. For each finding give the location (`file.tex:123`), what is
-   wrong, and a concrete suggestion. Mark related findings so the author can see
+   wrong, and a concrete suggestion. When a finding is an instance of a pattern (a
+   dropped hypothesis, a personification, a retired name), give the grep that finds
+   every instance as well as the lines found; a session that is given only lines
+   fixes only those lines. Mark related findings so the author can see
    which ones go together. End with what was not read and the open questions for the
    author. With more than about 15 findings, the terminal report gives the counts per
    group, the high-priority findings in full, what was not read, and the questions;
@@ -278,13 +325,23 @@ private page where the author can accept, modify, reject, or discuss each item a
 a note. The page saves responses to its own database, which later sessions read. Build
 it when the author agrees.
 
+Put a decision on the page only when it is easier for the author to make before the
+change: scope, new experiments, notation, structure, and cuts of content. Wording,
+openings, and local claim fixes are made in the session and reviewed by the author in
+the finished text. Wording judged as a separate item, without its surrounding text, is
+hard to evaluate, and sessions tend to paste it. So items describe the problem and the
+direction of the fix, not finished sentences, and patterns are filed as one item with
+a count rather than as one item per sentence.
+
 1. Load the `artifact-capabilities` skill. The page needs the `db` capability.
 2. Write a spec file in the scratchpad with one item per finding. IDs are the group
    letter plus a number (T1, N4, …). Item fields: `id`, `g` (group), `p`
    (`high`/`med`/`low`), `t` (title), `b` (finding), `s` (suggestion), `r` (line refs,
    e.g. `":212"`), `rel` (related IDs). The script's docstring gives the full format.
-   Backticks in text render as code. Put the commits from the baseline (this
-   manuscript's and each related draft's) in the `eyebrow` or `lede`.
+   Backticks in text render as code. In `s`, say what to change and in which
+   direction; do not write finished sentences for the manuscript. Put the commits from
+   the baseline (this manuscript's and each related draft's) in the `eyebrow` or
+   `lede`, and the table of what was read sentence by sentence in the `lede`.
 3. Build the page:
    `python3 ~/.claude/skills/polish-manuscripts/scripts/build_review_page.py spec.json review.html`.
    The script fails on duplicate IDs, unknown or empty groups, or dangling `rel`
@@ -345,8 +402,10 @@ When the author says they have responded:
 ## Phase 4: Plan the sessions
 
 A session is one fresh context window: the author types `/clear` and pastes a start
-prompt. Fresh contexts leave room to read the sections a session rewrites, and they
-keep analysis separate from writing (see below).
+prompt, or a coordinator starts a fresh subagent. Fresh contexts leave room to read the
+sections a session rewrites, and they keep analysis separate from writing (see below).
+Ask the author whether the sessions will run attended or unattended (see "Attended and
+unattended sessions"), and record the mode in each session's `note`.
 
 Group the accepted items into sessions:
 
@@ -365,17 +424,26 @@ Group the accepted items into sessions:
   and the captions or sentences that mention a style, which go to a writing session.
 - **A final sweep:** consistency of terms and symbols across the whole text (rerun
   the inventory script and compare its family and index tables with the baseline's),
-  a clean compile, the list of figures to regenerate, and a harvest of the author's
-  own edits (below).
+  a clean compile, the list of figures to regenerate, every remaining `\reviewmark`,
+  a sentence-by-sentence reading of every part that neither the survey nor a session
+  read that way, a reading of the abstract, introduction, and Discussion as wholes for
+  their line of argument, and a harvest of the author's own edits (below).
 
 ### Harvesting the author's edits
 
 Edits the author makes by hand during the review are the best evidence of what the
 review missed. In the final sweep, and whenever the author mentions having polished a
-section themselves, list the commits since the baseline that the author made by hand
-(no `Assisted-by` trailer; ask if that is unclear) and read their diffs. Classify
-each substantive change by the question that should have found it (T, D, F, N, W, R,
-O, C, G, X). For each class of change the review missed, say which check would have
+section themselves, list the commits since the baseline that the author made or
+directed (ask which agent-made commits the author directed) and read their diffs.
+Classify each change by the question that should have found it (T, D, F, B, N, W, R,
+O, C, G, X, S), and as a *miss* (no item named it), a *shortfall* (an item named it
+and a session acted on it, but the author redid it), or a *regression* (a session
+introduced it). Find the origin with `git blame` at the parent of each of the
+author's commits, and compare the wording with the baseline's: lines a session only
+re-wrapped or moved are blamed on that session. Classify rewording too, with short
+labels for the habit corrected; the labels show which habits the style guide needs to
+name. For a large harvest, delegate by slices of commits, giving every reader one
+shared brief. For each class of change the review missed, say which check would have
 caught it: an existing question applied more thoroughly, a sharper wording of one, or
 something new. Then propose an edit to this skill. Do not edit the skill without the
 author's approval. Report the classification even when every change falls under
@@ -402,11 +470,21 @@ memory note with the session list and order.
    presented in one place and its opening giving the stakes. File what you find as
    new items (see "Adding items" in Phase 2) and raise them with the author before
    acting on them. Fold a new item into the session only when the author agrees.
+   (Unattended sessions handle new findings as described under "Attended and
+   unattended sessions".)
+
+   When an item names a pattern, run its grep over the whole manuscript,
+   including captions, table cells, and appendices. Fix or rule on every hit,
+   and record the count in `status/<id>`. When you edit a sentence for one item,
+   reread the whole sentence (and surrounding context) against the style guide
+   and the C question; a defect left in a sentence a session has already touched
+   is still a miss.
 4. **Proposals first when the item calls for it.** For items marked `discuss` or
    `modify`, or with an open question in the note, propose and wait for the author's
-   answer before editing. For each proposal give a recommendation, an alternative if
-   there is a reasonable one, and the counts or locations it rests on. A table works
-   well for symbol renames.
+   answer before editing, if the question is one the author decides before the change
+   (Phase 2).
+   For each proposal give a recommendation, an alternative if there is a reasonable one,
+   and the counts or locations it rests on. A table works well for symbol renames.
 5. **Renames.** Count the uses and separate the named uses from generic uses of the
    same word ("a covariant start" may be a generic use even if "covariant start" is
    being renamed). Check figure titles, axis labels, legends, and the scripts that
@@ -417,24 +495,82 @@ memory note with the session list and order.
    (for small changes) delegate that change to a subagent on a branch in the
    package's repository. Anything that may require interaction with the user
    should be handled via the handoff file.
-7. **Revise before showing.** Draft first, then make a separate sentence-by-sentence
-   pass against the style guide before showing any new paragraph. Prose shown inside
-   a proposal is still read as prose.
-8. **Compile and check.** Build the manuscript (e.g. `latexmk`) and confirm there are
+7. **Revise before showing.** Write every passage yourself, in context; wording quoted
+   in an item or a note describes the intent, so do not paste it. Draft first, then
+   make a separate sentence-by-sentence pass against the style guide before showing
+   any new paragraph. Prose shown inside a proposal is still read as prose. When a
+   passage has received edits for several items, reread it whole for its line of
+   argument: edits made one item at a time add clauses that each fix something local,
+   and together they can make the passage read as written by committee.
+8. **Check what the edit removed.** For every paragraph the session shortened, moved,
+   merged, or deleted, diff it against the baseline and confirm that:
+   - every hypothesis and qualifier in the removed text survives, or its removal was
+     the item's purpose;
+   - no reason for a mechanism, no purpose clause, and no example that is the only
+     one of its kind was cut (a word target never justifies these cuts);
+   - procedures are still written as steps;
+   - moved text has no stale `above`, `below`, `cited above`, `Second,` or "This …" whose
+     antecedent moved;
+   - every new or moved section has an opening that passes the T test.
+
+9. **Compile and check.** Build the manuscript (e.g. `latexmk`) and confirm there are
    no errors and no undefined references or citations. Then grep for leftovers of
-   anything renamed.
-9. **Commit only your own changes.** The author may have uncommitted work in the same
+   anything renamed, in captions and table headers as well as prose.
+10. **Commit only your own changes.** The author may have uncommitted work in the same
    files: stage only your hunks (`git add -p`, or apply a patch of just your lines to
    the index). Ask once per review where commits go (e.g. manuscript on `main`, package
    on a branch) and record the answer in the memory note.
-10. **Close the session.** Write `status/<id>` for each finished item (with the commit
-   hash), set the session to `done` with a note that says what remains, and put
-   anything the next session must do first into that session's `note`. Then give the
-   author the prompt for the next session, ready to paste, e.g.
+11. **Close the session.** Write `status/<id>` for each finished item (with the commit
+   hash and, for pattern items, the count of hits fixed), set the session to `done`
+   with a note that says what remains, and put anything the next session must do
+   first into that session's `note`. In an attended session, then give the author the
+   prompt for the next session, ready to paste, e.g.
 
    > Start session 2 of the manuscript review work plan. Begin with the N10 investigation and discuss it with me before implementing anything.
 
    and tell them to type `/clear` first.
+
+## Attended and unattended sessions
+
+Sessions run in one of two modes, chosen when the sessions are planned (Phase 4).
+
+- **Attended:** the author reviews each session before the next starts. Proposals go
+  to the author in the session (Phase 5, step 4), and each session ends with the
+  prompt for the next. If the author polishes text between sessions, harvest those
+  edits (Phase 4) before the next session, so their lessons apply to the sessions that
+  remain.
+- **Unattended:** a coordinator runs several sessions in a row while the author is
+  away. It starts a fresh subagent for each session. It verifies each session's build
+  and commits itself, writes the page's `status` and `sessions` documents, and appends
+  each session to a run report. Before starting, write a run brief that the subagents
+  read. It holds:
+  - the project's standing rulings (they replace the project memory, which the
+    machine running the sessions may not see);
+  - the commit policy;
+  - the stop conditions: the build breaks and the session cannot fix it within its own
+    changes, git reports anything unexpected, the page's database cannot be read or
+    written, or a session needs a decision that would change an earlier session's
+    work;
+  - where the run report goes.
+
+  The run report gives, for each session: its commits; the items done and not done;
+  each marked passage and each judgment call, with the commit that undoes it; new
+  findings, as proposed items; questions for the author; and what was verified.
+
+Open questions are sorted by the rule in Phase 2 in both modes:
+
+| Question | Attended | Unattended |
+|---|---|---|
+| Scope, new experiments, notation, structure, cuts of content | Ask before editing | Do not decide. Leave the item undone and list it as a question in the report. |
+| Wording, openings, local claim fixes | Draft, then show | Draft in context and commit. |
+| A claim, verdict, recommendation, or table cell the session adds on its own judgment | Ask before committing | Commit it inside a visible mark (below), and list it in the report. |
+| New finding from the re-review (Phase 5, step 3) | Raise with the author | Fix it inside a mark if it is wording-level and within an accepted item's intent; otherwise list it in the report as a proposed item. |
+
+The mark is a macro the manuscript defines for the review and wraps around the marked
+passage, so that the author finds it in the PDF. Color works everywhere, including
+captions and table cells, where `\marginpar` fails:
+`\newcommand{\reviewmark}[1]{\textcolor{magenta}{#1}}` (with `xcolor`). The final sweep lists every remaining
+`\reviewmark`; none may survive into a submitted version.
 
 ## Analysis and writing are separate
 
