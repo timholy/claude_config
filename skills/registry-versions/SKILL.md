@@ -34,7 +34,8 @@ found = false
 for reg in reachable_registries()
     for (uuid, e) in reg.pkgs
         (e.name == target || string(uuid) == target) || continue
-        info = registry_info(e)
+        # Pkg ≥ 1.13 takes the registry as the first argument; earlier Pkg takes only the entry.
+        info = applicable(registry_info, reg, e) ? registry_info(reg, e) : registry_info(e)
         vers = sort(collect(keys(info.version_info)))
         println(reg.name, ": ", e.name, " [", uuid, "]  versions = ", vers)
         global found = true
